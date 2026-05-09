@@ -1,0 +1,106 @@
+:root {
+    --coffee-dark: #3E2723;
+    --coffee-medium: #6F4E37;
+    --latte-light: #F5EBE0;
+    --cream: #FAF9F6;
+    --berry-accent: #8D2121; /* Màu đỏ mận cho nút xóa/action */
+}
+
+/* Container chung cho bảng danh sách */
+.list-table-format {
+    display: grid;
+    grid-template-columns: 0.6fr 2fr 1fr 1fr 0.5fr;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 20px;
+    border-bottom: 1px solid #e2d8cf; /* Màu viền nhẹ nhàng hơn */
+    background-color: #fff;
+    transition: all 0.2s ease;
+}
+
+/* Hiệu ứng khi lướt qua các món */
+.list-table-format:not(.title):hover {
+    background-color: #fdfaf7;
+    transform: scale(1.01);
+}
+
+/* Dòng tiêu đề */
+.list-table-format.title {
+    background-color: #4b3832; /* Nâu đậm Cà phê */
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+/* Hình ảnh món ăn */
+.list-table-format img {
+    width: 55px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+/* Nút Xóa (X) */
+.cursor {
+    cursor: pointer;
+    color: #a0a0a0;
+    font-weight: bold;
+    text-align: center;
+    transition: color 0.2s;
+}
+
+.cursor:hover {
+    color: #e2725b; /* Màu cam đất khi hover xóa */
+}
+
+/* --- Tối ưu cho Mobile (Dưới 600px) --- */
+/* --- Tối ưu cho Mobile (Dưới 600px) --- */
+@media (max-width: 600px) {
+    .list-table-format {
+        /* Tăng lên 4 cột: Ảnh - Tên - Giá - Xóa */
+        grid-template-columns: 60px 1fr 60px 30px; 
+        gap: 5px;
+        padding: 10px 5px;
+        align-items: center;
+    }
+
+    .list-table-format.title {
+        display: none !important;
+    }
+
+    /* 1. Ẩn cột Category (Thường là phần tử p thứ 2 sau Name) */
+    /* Lưu ý: Bạn cần kiểm tra xem Category là p thứ mấy. 
+       Nếu Name là p(1) và Category là p(2) thì ẩn p(2) */
+    .list-table-format p:nth-of-type(2) { 
+        display: none !important; 
+    }
+
+    /* 2. Cột Tên (p thứ nhất) */
+    .list-table-format p:nth-of-type(1) {
+        font-weight: 600;
+        font-size: 13px;
+        white-space: nowrap;
+        /* Chống tràn tên quá dài */
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* 3. Cột Giá (p thứ ba) */
+    .list-table-format p:nth-of-type(3) {
+        font-size: 12px;
+        text-align: center;
+    }
+
+    /* 4. Dấu X (Phần tử có class .cursor) */
+    .cursor {
+        font-size: 16px;
+        text-align: center;
+        margin: 0;
+        padding: 5px 0;
+        /* Đảm bảo dấu X không bị đẩy ra ngoài */
+        display: block; 
+    }
+}

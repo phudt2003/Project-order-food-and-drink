@@ -1,0 +1,151 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root{
+  /* Coffee Bingo admin theme */
+  --primary: #8B5E3C;
+  --primary-hover: #6f472c;
+  --bg-body: #f6f3ef;
+  --bg-app: #f6f3ef;
+  --bg-surface: #ffffff;
+  --bg-surface-alt: #faf8f6;
+
+  --text-primary: #2c2c2c;
+  --text-secondary: #5b5b5b;
+  --text-muted: #7a7a7a;
+
+  --danger: #e74c3c;
+  --warning: #f39c12;
+  --success: #27ae60;
+
+  --accent: var(--primary);
+  --accent-strong: var(--primary-hover);
+  --accent-soft: rgba(139, 94, 60, 0.12);
+  --nav-bg: rgba(246, 243, 239, 0.96);
+  --border-color: #e6e1db;
+  --card-bg: #ffffff;
+
+  /* Tailwind palette tokens (theme-aligned) */
+  --color-amber-50: #f6f3ef;
+  --color-amber-100: #f0ece6;
+  --color-amber-200: #e6e1db;
+  --color-amber-300: #d6cec4;
+  --color-amber-400: #bfae9b;
+  --color-amber-500: var(--primary);
+  --color-amber-600: var(--primary-hover);
+  --color-amber-700: #5b3a24;
+
+  --color-stone-50: #ffffff;
+  --color-stone-100: #f9f5f0;
+  --color-stone-200: #e6e1db;
+  --color-stone-300: #d7c5b5;
+  --color-stone-500: #6b6b6b;
+  --color-stone-600: #5a5a5a;
+  --color-stone-700: #3f3f3f;
+  --color-stone-800: #2c2c2c;
+  --color-stone-900: #1f1f1f;
+
+  --color-slate-50: #f9f6f2;
+  --color-slate-100: #f2ece5;
+  --color-slate-200: #e7d9cb;
+  --color-slate-300: #d9c6b3;
+  --color-slate-400: #b5a79a;
+  --color-slate-500: #6b6b6b;
+  --color-slate-600: #5a5a5a;
+  --color-slate-700: #3f3f3f;
+  --color-slate-800: #2c2c2c;
+
+  --color-orange-100: #f7e9de;
+  --color-orange-200: #f0d5c3;
+  --color-orange-300: #e3bfa6;
+  --color-orange-50: #fbf1e8;
+  --color-orange-500: #c67c4e;
+  --color-orange-600: #b66a3f;
+
+  --navbar-height: 72px;
+}
+
+*{
+  box-sizing: border-box;
+  font-family: 'Be Vietnam Pro', 'Segoe UI', Tahoma, sans-serif;
+}
+
+body{
+  min-height: 100vh;
+  background-color: var(--bg-body);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+a{
+  text-decoration: none;
+  color: inherit;
+}
+
+hr{
+  border: none;
+  height: 1px;
+  background-color: var(--border-color);
+}
+
+.app-content{
+  display: flex;
+  width: 100%;
+  min-height: calc(100vh - var(--navbar-height));
+  background: var(--bg-body);
+  overflow-x: hidden;
+}
+
+.app-main{
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+/* dùng cho các form như Add, List, Orders */
+.flex-col{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Base element styles (keep utilities overridable) */
+@layer base {
+  /* input / textarea / select đồng bộ màu cafe */
+  :where(input, textarea, select){
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    outline: none;
+    font-size: 14px;
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  :where(input, textarea, select):focus{
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(139, 94, 60, 0.18);
+  }
+
+  :where(button){
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  }
+}
+
+@media (max-width: 900px) {
+  :root{
+    --navbar-height: 64px;
+  }
+
+  .app-content{
+    flex-direction: column;
+  }
+}
+

@@ -1,0 +1,155 @@
+.navbar{
+    width: 100%;
+    height: var(--navbar-height);
+    padding: 10px 4%;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: var(--nav-bg);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 8px 24px rgba(60, 40, 25, 0.08);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+.navbar .logo{
+    width: 100%;
+    display: block;
+    height: 100%;
+    object-fit: contain;
+    filter: none;
+}
+
+.brand-link {
+    display: inline-flex;
+    align-items: center;
+}
+
+.logo-wrap {
+    width: 150px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.navbar .profile{
+    width: auto;
+    height: 40px;
+    border: none;
+    background: transparent;
+    object-fit: contain;
+}
+
+.profile-menu {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.profile-button {
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+
+.profile-dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    min-width: 140px;
+    padding: 6px;
+    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid rgba(46, 26, 12, 0.12);
+    box-shadow: 0 12px 30px rgba(46, 26, 12, 0.18);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+    z-index: 40;
+}
+
+.profile-menu:hover .profile-dropdown,
+.profile-menu:focus-within .profile-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.profile-dropdown-item {
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: rgb(239, 68, 68);
+    cursor: pointer;
+}
+
+.profile-dropdown-item:hover {
+    background: rgba(46, 26, 12, 0.08);
+}
+
+#visual-toggle-button{
+    width: 140px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    cursor: pointer;
+}
+/* checkbox */
+#visual-toggle{
+    appearance: none;
+    display: none;
+}
+
+.svgIcon-toggle{
+    width: 25px;
+}
+
+.moon-svg{
+    width: 13px;
+    position: absolute;
+    transition: all .3s;
+}
+.sun-svg{
+    opacity: 0;
+    transition: all .3s;
+}
+.lightmode .sun-svg{
+    filter: brightness(0);
+    transform: rotate(180deg);
+    opacity: 1;
+}
+.lightmode .moon-svg{
+    opacity: 0;
+}
+.animate .moon-svg{
+    transform: rotate(360deg);
+    transition: all .3s;
+}
+
+.lightcolors .logo {
+    filter: none; 
+}
+
+@media (max-width: 768px) {
+    .logo-wrap {
+        width: 120px;
+        height: 32px;
+    }
+
+    .navbar{
+        padding: 8px 4%;
+    }
+}

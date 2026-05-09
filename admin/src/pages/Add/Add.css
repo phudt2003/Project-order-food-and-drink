@@ -1,0 +1,113 @@
+.add{
+    width: 100%;
+    padding: 20px;
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 16px;
+    flex:1;
+    min-width:0;
+}
+
+/* form */
+.add form{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+/* upload */
+.add-img-upload img{
+    width: 120px;
+}
+
+/* FIX SELECTOR SAI Ở ĐÂY */
+.add-product-name,
+.add-product-description{
+    width: 100%;
+}
+
+/* input textarea full width */
+.add-product-name input,
+.add-product-description textarea{
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* category + price responsive */
+.add-category-price{
+    display: flex;
+    gap: 16px;  
+    flex-wrap: wrap;
+}
+
+.add-category-price > div{
+    flex: 1;
+    min-width: 140px;
+}
+
+/* select input full */
+.add-category-price select,
+.add-category-price input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.add-btn{
+    width: 100%;
+    max-width: 200px;
+    border: none;
+    padding: 10px;
+    background-color: var(--accent);
+    color: white;
+    cursor: pointer;
+}
+
+
+label img[src*="assets/upload_area"] {
+    filter: var(--upload);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    align-items: end;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group .category-select {
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.form-group .category-select-label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group input,
+.form-group select {
+    height: 44px;
+    border-radius: 10px;
+    padding: 0 12px;
+}
+
+.form-group p {
+    margin-top: 6px;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+}

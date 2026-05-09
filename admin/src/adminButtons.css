@@ -1,0 +1,105 @@
+.btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-square {
+  border-radius: 0 !important;
+}
+
+.btn-tab {
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-weight: 800;
+  min-width: 110px;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-add {
+  background-color: #22c55e;
+  color: #fff;
+}
+
+.btn-add:hover {
+  background-color: #16a34a;
+}
+
+.btn-edit {
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+.btn-edit:hover {
+  background-color: #2563eb;
+}
+
+.btn-delete {
+  background-color: #ef4444;
+  color: #fff;
+}
+
+.btn-delete:hover {
+  background-color: #dc2626;
+}
+
+.btn-view {
+  background-color: #06b6d4;
+  color: #fff;
+}
+
+.btn-view:hover {
+  background-color: #0891b2;
+}
+
+.btn-status-on {
+  background-color: #22c55e;
+  color: #fff;
+}
+
+.btn-status-on:hover {
+  background-color: #16a34a;
+}
+
+.btn-status-off {
+  background-color: #94a3b8;
+  color: #fff;
+}
+
+.btn-status-off:hover {
+  background-color: #64748b;
+}
+
+.btn-confirm {
+  background-color: #10b981;
+  color: #fff;
+}
+
+.btn-confirm:hover {
+  background-color: #059669;
+}
+
+.btn-cancel {
+  background-color: #f59e0b;
+  color: #fff;
+}
+
+.btn-cancel:hover {
+  background-color: #d97706;
+}
