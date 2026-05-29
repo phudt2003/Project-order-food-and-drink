@@ -60,6 +60,12 @@ const toIso = (dateString: string, timeString: string) => {
   return date.toISOString();
 };
 
+const extractHHMM = (value: unknown) => {
+  const date = value ? new Date(String(value)) : null;
+  if (!date || !Number.isFinite(date.getTime())) return "";
+  return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+};
+
 const buildPayload = (form: VoucherFormValues) => {
   const isFlashSale = form.issueType === "flash_sale";
   const isCoin = form.issueType === "coin_exchange";
@@ -110,6 +116,8 @@ const buildPayload = (form: VoucherFormValues) => {
     comebackAfterDays: form.issueType === "comeback" ? Number(form.comebackAfterDays || 0) : 0,
     startDate: isDateOptional ? null : (isCoin || isNewUser) ? defaultStart : startDate,
     endDate: isDateOptional ? null : (isCoin || isNewUser) ? defaultEnd : endDate,
+    startTime: isFlashSale ? form.flashStartTime : "",
+    endTime: isFlashSale ? form.flashEndTime : "",
     applyFor: form.voucherType === "SHIPPING" || form.voucherType === "FOOD_DRINK" ? "all" : form.applyFor,
     categoryId: (form.voucherType === "SHIPPING" || form.voucherType === "FOOD_DRINK" ? "all" : form.applyFor) === "category" ? form.categoryId : null,
     productIds: (form.voucherType === "SHIPPING" || form.voucherType === "FOOD_DRINK" ? "all" : form.applyFor) === "product" ? form.productIds : [],
@@ -491,8 +499,8 @@ export default function VouchersPage({ url }: { url: string }) {
       productIds: Array.isArray((voucher as any)?.productIds)
         ? (voucher as any).productIds.map((item: any) => (typeof item === "string" ? item : String(item?._id || "")))
         : [],
-      flashStartTime: prev.flashStartTime,
-      flashEndTime: prev.flashEndTime,
+      flashStartTime: String((voucher as any)?.startTime || "") || extractHHMM(voucher?.startDate) || prev.flashStartTime,
+      flashEndTime: String((voucher as any)?.endTime || "") || extractHHMM(voucher?.endDate) || prev.flashEndTime,
     }));
 
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -638,4 +646,3 @@ export default function VouchersPage({ url }: { url: string }) {
     </div>
   );
 }
-

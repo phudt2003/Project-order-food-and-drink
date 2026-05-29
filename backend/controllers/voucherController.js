@@ -82,6 +82,17 @@ const parseDate = (value) => {
   return Number.isFinite(date.getTime()) ? date : null;
 };
 
+const normalizeTimeHHMM = (value) => {
+  const text = String(value || "").trim();
+  if (!/^\d{1,2}:\d{2}$/.test(text)) return "";
+  const [hRaw, mRaw] = text.split(":");
+  const h = Number(hRaw);
+  const m = Number(mRaw);
+  if (!Number.isFinite(h) || !Number.isFinite(m)) return "";
+  if (h < 0 || h > 23 || m < 0 || m > 59) return "";
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+};
+
 const normalizeVoucherType = (body = {}) => {
   const rawVoucherType = String(body.voucherType || "").trim().toUpperCase();
   if (Object.values(VOUCHER_TYPES).includes(rawVoucherType)) return rawVoucherType;
@@ -297,6 +308,8 @@ const normalizePayload = (body = {}) => {
   const usagePerUser = Number(body.usagePerUser || 1);
   const startDate = parseDate(body.startDate);
   const endDate = parseDate(body.endDate);
+  const startTime = normalizeTimeHHMM(body.startTime || body.flashStartTime);
+  const endTime = normalizeTimeHHMM(body.endTime || body.flashEndTime);
   const noDateIssueTypes = [
     ISSUE_TYPES.BIRTHDAY,
     ISSUE_TYPES.COMEBACK,
@@ -336,6 +349,8 @@ const normalizePayload = (body = {}) => {
     discountValue,
     startDate: normalizedStartDate,
     endDate: normalizedEndDate,
+    startTime: issueType === ISSUE_TYPES.FLASH_SALE ? startTime : "",
+    endTime: issueType === ISSUE_TYPES.FLASH_SALE ? endTime : "",
     applyFor,
     categoryId: applyFor === "category" ? categoryId : null,
     productIds: applyFor === "product" ? productIds : [],
@@ -599,6 +614,9 @@ const getTimeWindowMinutes = ({ voucher, campaignType, startDate, endDate }) => 
   return { hasTimeWindow, startMinutes, endMinutes };
 };
 
+const hasExplicitTimeWindow = (voucher) =>
+  parseTimeToMinutes(voucher?.startTime) != null && parseTimeToMinutes(voucher?.endTime) != null;
+
 const isWithinTimeWindow = ({ now, startMinutes, endMinutes }) => {
   if (startMinutes == null || endMinutes == null) return true;
   const nowMinutes = now.getHours() * 60 + now.getMinutes();
@@ -773,7 +791,7 @@ const evaluateVoucher = async ({ voucher, orderAmount, shippingFee, cartItems, u
   const campaignType = String(voucher?.campaignType || "").trim().toLowerCase();
   const startDate = voucher.startDate ? new Date(voucher.startDate) : null;
   const endDate = voucher.endDate ? new Date(voucher.endDate) : null;
-  const normalizeToDayBounds = campaignType !== CAMPAIGN_TYPES.HAPPY_HOUR;
+  const normalizeToDayBounds = campaignType !== CAMPAIGN_TYPES.HAPPY_HOUR || hasExplicitTimeWindow(voucher);
   if (startDate && normalizeToDayBounds) startDate.setHours(0, 0, 0, 0);
   if (endDate && normalizeToDayBounds) endDate.setHours(23, 59, 59, 999);
 
@@ -857,7 +875,7 @@ const evaluateVoucherForClaim = async ({ voucher, userId }) => {
   const campaignType = String(voucher?.campaignType || "").trim().toLowerCase();
   const startDate = voucher.startDate ? new Date(voucher.startDate) : null;
   const endDate = voucher.endDate ? new Date(voucher.endDate) : null;
-  const normalizeToDayBounds = campaignType !== CAMPAIGN_TYPES.HAPPY_HOUR;
+  const normalizeToDayBounds = campaignType !== CAMPAIGN_TYPES.HAPPY_HOUR || hasExplicitTimeWindow(voucher);
   if (startDate && normalizeToDayBounds) startDate.setHours(0, 0, 0, 0);
   if (endDate && normalizeToDayBounds) endDate.setHours(23, 59, 59, 999);
 
@@ -1172,7 +1190,7 @@ const getAvailableVouchers = async (req, res) => {
         const campaignType = String(voucher?.campaignType || "").trim().toLowerCase();
         const startDate = voucher.startDate ? new Date(voucher.startDate) : null;
         const endDate = voucher.endDate ? new Date(voucher.endDate) : null;
-        const normalizeToDayBounds = campaignType !== CAMPAIGN_TYPES.HAPPY_HOUR;
+        const normalizeToDayBounds = campaignType !== CAMPAIGN_TYPES.HAPPY_HOUR || hasExplicitTimeWindow(voucher);
         if (startDate && normalizeToDayBounds) startDate.setHours(0, 0, 0, 0);
         if (endDate && normalizeToDayBounds) endDate.setHours(23, 59, 59, 999);
         if (startDate && now < startDate) return false;

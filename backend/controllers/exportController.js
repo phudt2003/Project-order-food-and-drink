@@ -139,6 +139,18 @@ const exportInventoryBundle = async (req, res) => {
     const ingredientById = new Map(ingredients.map((i) => [String(i._id), i]));
     const toppingById = new Map(toppings.map((t) => [String(t._id), t]));
 
+    const logsByIngredient = new Map();
+    inventoryLogs.forEach((log) => {
+      const id = String(log?.ingredientId?._id || log?.ingredientId || "");
+      if (!id || !ingredientById.has(id)) return;
+      const list = logsByIngredient.get(id) || [];
+      list.push(log);
+      logsByIngredient.set(id, list);
+    });
+    logsByIngredient.forEach((list) => {
+      list.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    });
+
     // Opening stock (last stockAfter before 'from')
     const openingByIngredient = new Map();
     if (from) {
@@ -183,11 +195,26 @@ const exportInventoryBundle = async (req, res) => {
 
     const ingredientRows = ingredients.map((ing, idx) => {
       const id = String(ing._id);
-      const opening = openingByIngredient.get(id) || 0;
+      const periodLogs = logsByIngredient.get(id) || [];
+      const firstPeriodLog = periodLogs[0] || null;
+      const lastPeriodLog = periodLogs[periodLogs.length - 1] || null;
+      const currentStock = num(ing.stock || 0);
+
+      let opening = openingByIngredient.get(id);
+      if (opening == null && firstPeriodLog?.stockBefore != null) {
+        opening = num(firstPeriodLog.stockBefore);
+      }
       const totalImport = importsByIng.get(id) || 0;
       const totalExport = exportsByIng.get(id) || 0; // bán + hỏng (order + export)
+      if (opening == null) {
+        opening = from ? currentStock : currentStock - totalImport + totalExport;
+      }
       const rawClosing = opening + totalImport - totalExport;
-      const closing = Math.max(0, rawClosing); // không cho âm
+      const closing = !from && !to
+        ? currentStock
+        : lastPeriodLog?.stockAfter != null
+          ? num(lastPeriodLog.stockAfter)
+          : rawClosing;
       const warning = rawClosing < 0 ? "Âm tồn, cần kiểm tra" : "";
       return {
         index: idx + 1,
@@ -196,7 +223,7 @@ const exportInventoryBundle = async (req, res) => {
         opening,
         import: totalImport,
         export: totalExport,
-        closing,
+        closing: Math.max(0, closing),
         warning,
       };
     });

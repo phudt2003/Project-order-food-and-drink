@@ -452,6 +452,22 @@ const buildKeyYearMonth = (year, month) => year * 100 + month;
 
 const buildKeyYMD = (year, month, day) => year * 10000 + month * 100 + day;
 
+const buildDateKeyInTimeZone = (value, timeZone = TIMEZONE) => {
+  const date = value instanceof Date ? value : new Date(value);
+  if (!Number.isFinite(date.getTime())) return null;
+  const parts = getDatePartsInTimeZone(date, timeZone);
+  const key = buildKeyYMD(parts.year, parts.month, parts.day);
+  return Number.isFinite(key) ? key : null;
+};
+
+const isDateWithinVoucherRange = ({ voucher, now, timeZone = TIMEZONE }) => {
+  const currentKey = buildDateKeyInTimeZone(now, timeZone);
+  const startKey = buildDateKeyInTimeZone(voucher?.startDate, timeZone);
+  const endKey = buildDateKeyInTimeZone(voucher?.endDate, timeZone);
+  if (currentKey == null || startKey == null || endKey == null) return false;
+  return startKey <= currentKey && currentKey <= endKey;
+};
+
 const parseBirthday = (value) => {
   if (!value) return null;
   const parsed = new Date(value);
@@ -1148,15 +1164,16 @@ const autoSyncVouchers = async (req, res) => {
       results.monthly.voucherGranted = Boolean(created);
     }
 
-    const flashVoucher = await voucherModel
-      .findOne({
+    const flashVoucherCandidates = await voucherModel
+      .find({
         status: "active",
         campaignType: "happy_hour",
-        startDate: { $lte: now },
-        endDate: { $gte: now },
       })
       .sort({ discountValue: -1, createdAt: -1 })
       .lean();
+    const flashVoucher = flashVoucherCandidates.find((voucher) =>
+      isDateWithinVoucherRange({ voucher, now, timeZone: TIMEZONE })
+    );
 
     if (flashVoucher) {
       results.flash_sale.active = true;

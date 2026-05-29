@@ -98,13 +98,13 @@ const ExportStock = ({ url }) => {
         note,
       };
       const result = await exportSmart(url, payload);
-      if (!result?.success) throw new Error(result?.message || "Xuat kho that bai");
-      toast.success("Xuat kho thanh cong");
+      if (!result?.success) throw new Error(result?.message || "Xuất kho thất bại");
+      toast.success("Xuất kho thành công");
       setItemId("");
       setQuantity("");
       setNote("");
     } catch (error) {
-      toast.error(error?.response?.data?.message || error?.message || "Xuat kho that bai");
+      toast.error(error?.response?.data?.message || error?.message || "Xuất kho thất bại");
     } finally {
       setLoading(false);
     }
@@ -124,7 +124,7 @@ const ExportStock = ({ url }) => {
           <div className="text-sm text-stone-500">Hu hong / do vo / dieu chinh.</div>
         </div>
         <button type="button" className={submitButtonStyle} onClick={handleSubmit} disabled={loading}>
-          {loading ? "Dang xu ly..." : "Xac nhan xuat kho"}
+          {loading ? "Dang xu ly..." : "Xác nhận xuất kho"}
         </button>
       </div>
 
