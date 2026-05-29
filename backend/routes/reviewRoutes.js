@@ -7,7 +7,7 @@ import {
   claimReward,
   listMyReviews,
   listReviews,
-  listReviewsByFood,
+  listReviewsByProduct,
   updateReview,
   deleteReview,
   updateReviewStatus,
@@ -21,7 +21,7 @@ reviewRouter.get("/order/:orderId/reviewables", authMiddleware, getReviewablePro
 reviewRouter.post("/:id/claim-reward", authMiddleware, claimReward);
 reviewRouter.get("/my", authMiddleware, listMyReviews);
 reviewRouter.get("/", adminAuth, listReviews);
-reviewRouter.get("/:foodId", listReviewsByFood);
+reviewRouter.get("/:productId", listReviewsByProduct);
 reviewRouter.patch("/:id/status", adminAuth, updateReviewStatus);
 reviewRouter.patch("/:id/reply", adminAuth, updateReviewReply);
 reviewRouter.patch("/:id", authMiddleware, updateReview);

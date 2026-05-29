@@ -19,13 +19,13 @@ const reviewSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    foodId: {
+    productId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "product",
       required: true,
       index: true,
     },
-    foodName: {
+    productName: {
       type: String,
       required: true,
       trim: true,
@@ -86,10 +86,10 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
-reviewSchema.index({ foodId: 1, createdAt: -1 });
+reviewSchema.index({ productId: 1, createdAt: -1 });
 // Enforce "1 review per product per order" (legacy reviews without orderId are ignored by this unique index).
 reviewSchema.index(
-  { userId: 1, orderId: 1, foodId: 1 },
+  { userId: 1, orderId: 1, productId: 1 },
   {
     unique: true,
     partialFilterExpression: { orderId: { $type: "objectId" } },

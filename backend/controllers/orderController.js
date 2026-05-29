@@ -161,7 +161,7 @@ const buildReviewSummaryMapForOrders = async ({ userId, orders }) => {
     { $match: { userId: userObjectId, orderId: { $in: orderIds } } },
     {
       $group: {
-        _id: { orderId: "$orderId", foodId: "$foodId" },
+        _id: { orderId: "$orderId", productId: { $ifNull: ["$productId", "$foodId"] } },
         isRewardClaimed: { $max: "$isRewardClaimed" },
       },
     },

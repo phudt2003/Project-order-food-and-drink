@@ -46,6 +46,14 @@ const haversineDistanceKm = (origin, destination) => {
 
 const createToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET);
 
+const ensureExistingUserForAddress = async (userId) => {
+  const user = await userModel.findById(userId).select("_id").lean();
+  if (user?._id) return true;
+
+  await addressModel.deleteMany({ userId: String(userId || "") });
+  return false;
+};
+
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -165,8 +173,13 @@ const getUserAddresses = async (req, res) => {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
+    const userExists = await ensureExistingUserForAddress(userId);
+    if (!userExists) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
     const addresses = await addressModel
-      .find({ user_id: userId })
+      .find({ userId })
       .sort({ is_default: -1, created_at: -1 })
       .lean();
 
@@ -182,6 +195,11 @@ const addUserAddress = async (req, res) => {
     const userId = String(req.userId || "");
     if (!userId) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const userExists = await ensureExistingUserForAddress(userId);
+    if (!userExists) {
+      return res.status(404).json({ success: false, message: "User not found." });
     }
 
     const {
@@ -213,15 +231,15 @@ const addUserAddress = async (req, res) => {
         .json({ success: false, message: `Địa chỉ nằm ngoài phạm vi giao hàng ${MAX_DELIVERY_DISTANCE_KM}km` });
     }
 
-    const count = await addressModel.countDocuments({ user_id: userId });
+    const count = await addressModel.countDocuments({ userId });
     const shouldDefault = Boolean(is_default) || count === 0;
 
     if (shouldDefault) {
-      await addressModel.updateMany({ user_id: userId }, { $set: { is_default: false } });
+      await addressModel.updateMany({ userId }, { $set: { is_default: false } });
     }
 
     const address = await addressModel.create({
-      user_id: userId,
+      userId,
       name: String(name).trim(),
       phone: String(phone).trim(),
       province: String(province).trim(),
@@ -256,6 +274,11 @@ const updateUserAddress = async (req, res) => {
       return res.status(400).json({ success: false, message: "Address id is required." });
     }
 
+    const userExists = await ensureExistingUserForAddress(userId);
+    if (!userExists) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
     const {
       name = "",
       phone = "",
@@ -285,7 +308,7 @@ const updateUserAddress = async (req, res) => {
     }
 
     const address = await addressModel.findOneAndUpdate(
-      { _id: addressId, user_id: userId },
+      { _id: addressId, userId },
       {
         $set: {
           name: String(name).trim(),
@@ -327,13 +350,18 @@ const deleteUserAddress = async (req, res) => {
       return res.status(400).json({ success: false, message: "Address id is required." });
     }
 
-    const address = await addressModel.findOneAndDelete({ _id: addressId, user_id: userId });
+    const userExists = await ensureExistingUserForAddress(userId);
+    if (!userExists) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
+    const address = await addressModel.findOneAndDelete({ _id: addressId, userId });
     if (!address) {
       return res.status(404).json({ success: false, message: "Address not found." });
     }
 
     if (address.is_default) {
-      const fallback = await addressModel.findOne({ user_id: userId }).sort({ created_at: -1 });
+      const fallback = await addressModel.findOne({ userId }).sort({ created_at: -1 });
       if (fallback) {
         fallback.is_default = true;
         await fallback.save();

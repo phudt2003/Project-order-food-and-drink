@@ -44,13 +44,29 @@ const isOrderDelivered = (order, now = new Date()) => {
   return ["done", "completed"].includes(fulfillment);
 };
 
-const orderHasFood = (order, foodObjectId) => {
-  if (!order || !foodObjectId) return false;
-  const foodId = String(foodObjectId);
+const buildProductFieldFilter = (value) => ({
+  $or: [{ productId: value }, { foodId: value }],
+});
+
+const buildProductFieldInFilter = (values) => ({
+  $or: [{ productId: { $in: values } }, { foodId: { $in: values } }],
+});
+
+const buildProductNameSearchFilter = (regex) => ({
+  $or: [{ productName: { $regex: regex } }, { foodName: { $regex: regex } }],
+});
+
+const getReviewProductId = (review) => String(review?.productId || review?.foodId || "");
+
+const getReviewProductName = (review) => String(review?.productName || review?.foodName || "").trim();
+
+const orderHasProduct = (order, productObjectId) => {
+  if (!order || !productObjectId) return false;
+  const productId = String(productObjectId);
   const items = Array.isArray(order?.items) ? order.items : [];
   return items.some((item) => {
     const candidates = [item?._id, item?.productId, item?.itemId, item?.foodId];
-    return candidates.some((value) => value != null && String(value) === foodId);
+    return candidates.some((value) => value != null && String(value) === productId);
   });
 };
 
@@ -220,20 +236,20 @@ const getRewardCoins = () => {
   return Number.isFinite(parsed) && parsed > 0 ? Math.round(parsed) : 10;
 };
 
-const hasPurchasedFood = async ({ userId, foodId, orderId }) => {
-  if (!userId || !foodId) return false;
-  const foodIdString = String(foodId);
+const hasPurchasedProduct = async ({ userId, productId, orderId }) => {
+  if (!userId || !productId) return false;
+  const productIdString = String(productId);
 
   const query = {
     userId,
     ...(orderId ? { _id: orderId } : {}),
     $or: [
-      { "items._id": foodIdString },
-      { "items.productId": foodIdString },
-      { "items.itemId": foodIdString },
-      { "items._id": foodId },
-      { "items.productId": foodId },
-      { "items.itemId": foodId },
+      { "items._id": productIdString },
+      { "items.productId": productIdString },
+      { "items.itemId": productIdString },
+      { "items._id": productId },
+      { "items.productId": productId },
+      { "items.itemId": productId },
     ],
     status: { $nin: ["cancelled", "canceled"] },
   };
@@ -244,7 +260,12 @@ const hasPurchasedFood = async ({ userId, foodId, orderId }) => {
 
 const buildReviewResponse = (review) => {
   if (!review) return null;
-  return review?.toObject ? review.toObject() : review;
+  const raw = review?.toObject ? review.toObject() : review;
+  return {
+    ...raw,
+    productId: getReviewProductId(raw),
+    productName: getReviewProductName(raw),
+  };
 };
 
 const createReview = async (req, res) => {
@@ -259,9 +280,9 @@ const createReview = async (req, res) => {
     if (!orderObjectId) {
       return res.status(400).json({ success: false, message: "Thiếu mã đơn hàng." });
     }
-    const foodObjectId = toObjectId(req.body?.foodId || req.body?.productId);
-    if (!foodObjectId) {
-      return res.status(400).json({ success: false, message: "Invalid foodId" });
+    const productObjectId = toObjectId(req.body?.productId || req.body?.foodId);
+    if (!productObjectId) {
+      return res.status(400).json({ success: false, message: "Invalid productId" });
     }
 
     const rating = normalizeRating(req.body?.rating);
@@ -280,9 +301,9 @@ const createReview = async (req, res) => {
       return res.status(400).json({ success: false, message: "Comment is required" });
     }
 
-    const food = await foodModel.findById(foodObjectId, "name").lean();
-    if (!food) {
-      return res.status(404).json({ success: false, message: "Food not found" });
+    const product = await foodModel.findById(productObjectId, "name").lean();
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
     }
 
     let userName = normalizeString(req.body?.userName);
@@ -295,9 +316,9 @@ const createReview = async (req, res) => {
       return res.status(400).json({ success: false, message: "User name is required" });
     }
 
-    const foodName = normalizeString(req.body?.foodName) || normalizeString(food?.name);
-    if (!foodName) {
-      return res.status(400).json({ success: false, message: "Food name is required" });
+    const productName = normalizeString(req.body?.productName || req.body?.foodName) || normalizeString(product?.name);
+    if (!productName) {
+      return res.status(400).json({ success: false, message: "Product name is required" });
     }
 
     const order = await orderModel.findOne({ _id: orderObjectId, userId: userObjectId }).lean();
@@ -310,7 +331,7 @@ const createReview = async (req, res) => {
         message: "Đơn hàng chưa giao thành công, chưa thể đánh giá.",
       });
     }
-    if (!orderHasFood(order, foodObjectId)) {
+    if (!orderHasProduct(order, productObjectId)) {
       return res.status(400).json({
         success: false,
         message: "Sản phẩm không thuộc đơn hàng này.",
@@ -336,8 +357,8 @@ const createReview = async (req, res) => {
 
     const existed = await reviewModel.findOne({
       userId: userObjectId,
-      foodId: foodObjectId,
       ...(orderObjectId ? { orderId: orderObjectId } : {}),
+      ...buildProductFieldFilter(productObjectId),
     });
     if (existed) {
       return res.status(409).json({
@@ -353,8 +374,8 @@ const createReview = async (req, res) => {
     const review = await reviewModel.create({
       userId: userObjectId,
       userName,
-      foodId: foodObjectId,
-      foodName,
+      productId: productObjectId,
+      productName,
       rating,
       comment,
       orderId: orderObjectId || null,
@@ -385,10 +406,10 @@ const createReview = async (req, res) => {
       try {
         const existed = await reviewModel.findOne({
           userId: toObjectId(req.userId || req.body?.userId),
-          foodId: toObjectId(req.body?.foodId || req.body?.productId),
           ...(toObjectId(req.body?.orderId)
             ? { orderId: toObjectId(req.body?.orderId) }
             : {}),
+          ...buildProductFieldFilter(toObjectId(req.body?.productId || req.body?.foodId)),
         });
         if (existed) {
           return res.status(409).json({
@@ -435,14 +456,14 @@ const getReviewableProducts = async (req, res) => {
     const productMap = new Map();
 
     items.forEach((item) => {
-      const foodObjectId =
+      const productObjectId =
         toObjectId(item?.productId) ||
         toObjectId(item?._id) ||
         toObjectId(item?.itemId) ||
         toObjectId(item?.foodId);
-      if (!foodObjectId) return;
+      if (!productObjectId) return;
 
-      const key = String(foodObjectId);
+      const key = String(productObjectId);
       const quantity = Math.max(1, Number(item?.quantity || 1));
       const name = normalizeString(item?.name || item?.productName || item?.title);
       const image = normalizeString(item?.image || item?.thumbnail || item?.product?.image);
@@ -465,9 +486,9 @@ const getReviewableProducts = async (req, res) => {
 
     const productIds = [...productMap.keys()].map((id) => new mongoose.Types.ObjectId(id));
     const reviews = await reviewModel
-      .find({ userId: userObjectId, orderId: orderObjectId, foodId: { $in: productIds } })
+      .find({ userId: userObjectId, orderId: orderObjectId, ...buildProductFieldInFilter(productIds) })
       .lean();
-    const reviewMap = new Map(reviews.map((review) => [String(review.foodId), review]));
+    const reviewMap = new Map(reviews.map((review) => [getReviewProductId(review), buildReviewResponse(review)]));
 
     const products = [...productMap.values()].map((product) => {
       const review = reviewMap.get(String(product.productId)) || null;
@@ -564,46 +585,51 @@ const listMyReviews = async (req, res) => {
       return res.status(401).json({ success: false, message: "Login First" });
     }
 
-    const rawFoodIds = String(req.query?.foodIds || "")
+    const rawProductIds = String(req.query?.productIds || req.query?.foodIds || "")
       .split(",")
       .map((value) => value.trim())
       .filter(Boolean);
-    const foodObjectIds = rawFoodIds
+    const productObjectIds = rawProductIds
       .map((value) => toObjectId(value))
       .filter(Boolean);
 
     const filter = { userId: userObjectId };
-    if (foodObjectIds.length > 0) {
-      filter.foodId = { $in: foodObjectIds };
+    if (productObjectIds.length > 0) {
+      Object.assign(filter, buildProductFieldInFilter(productObjectIds));
     }
 
     const reviews = await reviewModel.find(filter).sort({ createdAt: -1 }).lean();
-    return res.json({ success: true, data: reviews });
+    return res.json({ success: true, data: reviews.map(buildReviewResponse) });
   } catch (error) {
     console.log("LIST MY REVIEWS ERROR:", error.message);
     return res.status(500).json({ success: false, message: "Failed to fetch reviews" });
   }
 };
 
-const listReviewsByFood = async (req, res) => {
+const listReviewsByProduct = async (req, res) => {
   try {
-    const foodObjectId = toObjectId(req.params?.foodId);
-    if (!foodObjectId) {
-      return res.status(400).json({ success: false, message: "Invalid foodId" });
+    const productObjectId = toObjectId(req.params?.productId || req.params?.foodId);
+    if (!productObjectId) {
+      return res.status(400).json({ success: false, message: "Invalid productId" });
     }
 
     const { page, limit, skip } = parsePagination(req, { page: 1, limit: 20 });
 
     const approvalRequired = isReviewApprovalRequired();
     const statusFilter = approvalRequired ? ["approved"] : ["approved", "pending"];
+    const visibilityMatch = {
+      $or: [
+        { status: { $in: statusFilter } },
+        { adminReply: { $exists: true, $ne: "" } },
+      ],
+    };
 
     const [result] = await reviewModel.aggregate([
       {
         $match: {
-          foodId: foodObjectId,
-          $or: [
-            { status: { $in: statusFilter } },
-            { adminReply: { $exists: true, $ne: "" } },
+          $and: [
+            buildProductFieldFilter(productObjectId),
+            visibilityMatch,
           ],
         },
       },
@@ -624,7 +650,7 @@ const listReviewsByFood = async (req, res) => {
       },
     ]);
 
-    const reviews = result?.reviews || [];
+    const reviews = (result?.reviews || []).map(buildReviewResponse);
     const stats = result?.stats?.[0] || { averageRating: 0, reviewCount: 0 };
     const averageRating = Number.isFinite(stats.averageRating)
       ? Math.round(stats.averageRating * 10) / 10
@@ -639,7 +665,7 @@ const listReviewsByFood = async (req, res) => {
       limit,
     });
   } catch (error) {
-    console.log("LIST REVIEWS BY FOOD ERROR:", error.message);
+    console.log("LIST REVIEWS BY PRODUCT ERROR:", error.message);
     return res.status(500).json({ success: false, message: "Failed to fetch reviews" });
   }
 };
@@ -648,7 +674,7 @@ const listReviews = async (req, res) => {
   try {
     const { page, limit, skip } = parsePagination(req, { page: 1, limit: 20 });
     const statusFilter = normalizeStatus(req.query?.status);
-    const foodId = toObjectId(req.query?.foodId);
+    const productId = toObjectId(req.query?.productId || req.query?.foodId);
     const userId = toObjectId(req.query?.userId);
     const ratingFilter = normalizeRating(req.query?.rating);
     const dateRange = buildDateRange({
@@ -659,21 +685,25 @@ const listReviews = async (req, res) => {
     const sort = parseSort(req.query?.sort);
 
     const filter = {};
+    const andConditions = [];
     if (statusFilter) filter.status = statusFilter;
     if (ratingFilter) filter.rating = ratingFilter;
-    if (foodId) filter.foodId = foodId;
+    if (productId) andConditions.push(buildProductFieldFilter(productId));
     if (userId) filter.userId = userId;
     if (dateRange) filter.createdAt = dateRange;
     if (searchText) {
       const regex = new RegExp(escapeRegex(searchText), "i");
-      filter.$or = [
+      andConditions.push({
+        $or: [
         { comment: { $regex: regex } },
         { userName: { $regex: regex } },
-        { foodName: { $regex: regex } },
+        ...buildProductNameSearchFilter(regex).$or,
         { phone: { $regex: regex } },
         { address: { $regex: regex } },
-      ];
+        ],
+      });
     }
+    if (andConditions.length > 0) filter.$and = andConditions;
 
     const [reviews, total] = await Promise.all([
       reviewModel
@@ -696,7 +726,7 @@ const listReviews = async (req, res) => {
     }
 
     const data = reviews.map((review) => ({
-      ...review,
+      ...buildReviewResponse(review),
       userEmail: userEmailMap.get(String(review?.userId || "")) || "",
     }));
 
@@ -878,7 +908,7 @@ export {
   getReviewableProducts,
   claimReward,
   listMyReviews,
-  listReviewsByFood,
+  listReviewsByProduct,
   listReviews,
   updateReview,
   deleteReview,

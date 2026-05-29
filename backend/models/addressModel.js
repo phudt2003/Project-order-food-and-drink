@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const addressSchema = new mongoose.Schema(
   {
-    user_id: { type: String, required: true, index: true },
+    userId: { type: String, required: true, index: true },
     name: { type: String, required: true },
     phone: { type: String, required: true },
     province: { type: String, required: true },

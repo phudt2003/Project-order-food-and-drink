@@ -22,10 +22,10 @@ export const searchUsers = async (req, res) => {
         or.push({ phone: new RegExp(phonePattern) });
         const addressUsers = await addressModel
           .find({ phone: new RegExp(phonePattern), is_default: true })
-          .select("user_id")
+          .select("userId")
           .lean();
         const addressUserIds = addressUsers
-          .map((a) => String(a?.user_id || ""))
+          .map((a) => String(a?.userId || ""))
           .filter(Boolean);
         if (addressUserIds.length > 0) {
           or.push({ _id: { $in: addressUserIds } });
@@ -58,10 +58,10 @@ export const searchUsers = async (req, res) => {
 
       if (extraIds.length > 0) {
         const addressUsers = await addressModel
-          .find({ user_id: { $in: extraIds }, is_default: true })
-          .select("user_id")
+          .find({ userId: { $in: extraIds }, is_default: true })
+          .select("userId")
           .lean();
-        const addressUserIds = new Set(addressUsers.map((a) => String(a?.user_id || "")));
+        const addressUserIds = new Set(addressUsers.map((a) => String(a?.userId || "")));
         const filteredExtraIds = extraIds.filter((id) => !addressUserIds.has(id));
 
         if (filteredExtraIds.length > 0) {

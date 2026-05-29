@@ -282,8 +282,8 @@ const getTopProducts = async (req, res) => {
 
     const reviews = ids.length
       ? await reviewModel.aggregate([
-          { $match: { foodId: { $in: ids }, status: "approved" } },
-          { $group: { _id: "$foodId", count: { $sum: 1 } } },
+          { $match: { $or: [{ productId: { $in: ids } }, { foodId: { $in: ids } }], status: "approved" } },
+          { $group: { _id: { $ifNull: ["$productId", "$foodId"] }, count: { $sum: 1 } } },
         ])
       : [];
 
@@ -662,8 +662,8 @@ export const getDashboardStats = async (req, res) => {
 
     const reviews = reviewIds.length
       ? await reviewModel.aggregate([
-          { $match: { foodId: { $in: reviewIds }, status: "approved" } },
-          { $group: { _id: "$foodId", count: { $sum: 1 } } },
+          { $match: { $or: [{ productId: { $in: reviewIds } }, { foodId: { $in: reviewIds } }], status: "approved" } },
+          { $group: { _id: { $ifNull: ["$productId", "$foodId"] }, count: { $sum: 1 } } },
         ])
       : [];
 

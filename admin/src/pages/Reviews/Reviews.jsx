@@ -324,7 +324,7 @@ const ReviewsPage = ({ url }) => {
                         {review?.userName || "Khách hàng"}
                         <span className="text-xs text-slate-400">• {formatDate(review?.createdAt)}</span>
                       </p>
-                      <p className="text-sm text-slate-600">Món: {review?.foodName || "--"}</p>
+                      <p className="text-sm text-slate-600">Món: {review?.productName || review?.foodName || "--"}</p>
                     </div>
                     <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusMeta.className}`}>
                       {statusMeta.label}

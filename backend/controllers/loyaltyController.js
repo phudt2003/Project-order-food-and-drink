@@ -707,7 +707,7 @@ export const applyReferralCode = async (req, res) => {
 
     const updatedUser = await userModel.findOneAndUpdate(
       { _id: userId, referredBy: null },
-      { $set: { referredBy: inviter._id }, $inc: { coinBalance: rewardCoins } },
+      { $set: { referredBy: inviter._id } },
       { new: true }
     ).select("coinBalance referredBy");
 
@@ -723,26 +723,19 @@ export const applyReferralCode = async (req, res) => {
 
     await Promise.allSettled([
       loyaltyTransactionModel.create({
-        userId,
-        amount: rewardCoins,
-        reason: "referral",
-        ymd: todayYmd,
-        meta: { inviterId: String(inviter._id), code },
-        balanceAfter: Math.max(0, Number(updatedUser?.coinBalance || 0)),
-      }),
-      loyaltyTransactionModel.create({
         userId: String(inviter._id),
         amount: rewardCoins,
         reason: "referral",
         ymd: todayYmd,
-        meta: { invitedUserId: userId, code },
+        meta: { invitedUserId: userId, appliedByUserId: userId, code },
         balanceAfter: Math.max(0, Number(updatedInviter?.coinBalance || 0)),
       }),
     ]);
 
     return res.json({
       success: true,
-      rewardCoins,
+      rewardCoins: 0,
+      inviterRewardCoins: rewardCoins,
       coinBalance: Math.max(0, Number(updatedUser?.coinBalance || 0)),
       inviter: { referralsCount: Math.max(0, Number(updatedInviter?.referralsCount || 0)) },
     });

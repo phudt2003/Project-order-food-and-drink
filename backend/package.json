@@ -9,6 +9,8 @@
     "create-admin": "node scripts/createAdmin.js",
     "check-inventory-e2e": "node scripts/checkInventoryE2E.js",
     "migrate-food-to-product": "node scripts/migrateFoodToProduct.js",
+    "migrate-address-user-id": "node scripts/migrateAddressUserId.js",
+    "migrate-review-product-fields": "node scripts/migrateReviewProductFields.js",
     "migrate-legacy-recipes": "node scripts/migrateLegacyRecipes.js",
     "migrate-topping-recipes": "node scripts/migrateToppingRecipes.js",
     "migrate-images:dry": "node scripts/migrateImagesToCloudinary.js",
