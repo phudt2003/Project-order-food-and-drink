@@ -836,7 +836,10 @@ const StoreContextProvider = ({ children }) => {
       const response = await axios.get(`${url}/api/product/list`);
       const foods = response?.data?.data;
       const list = Array.isArray(foods) ? foods : [];
-      setFoodList(list.filter((item) => item?.isActive !== false));
+      const visibleFoods = list.filter((item) => item?.isActive !== false);
+      console.log("fetchFoodList response =", response?.data);
+      console.log("food_list =", visibleFoods);
+      setFoodList(visibleFoods);
     } catch (error) {
       console.error("Fetch food list error:", error);
       setFoodList([]);

@@ -38,6 +38,10 @@ const FoodDisplay = ({ category, excludeIds = [] }) => {
 
   const { food_list, url, addToCart } = useContext(StoreContext)
 
+  useEffect(() => {
+    console.log("food_list =", food_list)
+  }, [food_list])
+
   const excludeSet = useMemo(() => {
     const list = Array.isArray(excludeIds) ? excludeIds : []
     return new Set(list.map((id) => String(id)))

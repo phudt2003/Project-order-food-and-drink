@@ -18,7 +18,7 @@ const Home = () => {
   const [category, setCategory] = useState("All")
   const location = useLocation()
   const navigate = useNavigate()
-  const { token, userProfile, autoSyncVouchers, refreshMyVouchers, myVouchers, voucherActiveCount } = useContext(StoreContext)
+  const { token, userProfile, autoSyncVouchers, refreshMyVouchers, myVouchers, voucherActiveCount, food_list } = useContext(StoreContext)
   const [voucherSync, setVoucherSync] = useState(null)
   const [showBirthdayModal, setShowBirthdayModal] = useState(false)
   const [toastMessage, setToastMessage] = useState("")
@@ -29,6 +29,10 @@ const Home = () => {
     const timer = setTimeout(() => setToastMessage(""), 3000)
     return () => clearTimeout(timer)
   }, [toastMessage])
+
+  useEffect(() => {
+    console.log("Home food_list =", food_list)
+  }, [food_list])
 
   useEffect(() => {
     const sectionMap = {
