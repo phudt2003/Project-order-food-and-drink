@@ -47,6 +47,7 @@ const App = () => {
     || normalizedPath.startsWith('/sign-up/')
   const isHome = HOME_PATHS.has(String(location.pathname || ''))
   const ready = Boolean(isLoaded && isSignedIn && token && userProfile && isHome)
+  console.log("App rendered", { isLoaded, isSignedIn, path: location.pathname })
 
   // Global scroll restoration on route change (avoid staying at footer when navigating).
   useEffect(() => {
@@ -238,9 +239,6 @@ const App = () => {
       setCheckinBusy(false)
     }
   }
-
-  // Chặn flicker UI khi Clerk đang tải
-  if (!isLoaded) return null
 
   if (isAuthPage) {
     return (

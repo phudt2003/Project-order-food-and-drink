@@ -12,6 +12,10 @@ function FoodItem({ id, name, price, description, image, url, onAdd }) {
   const [rating, setRating] = useState(5);
 
   useEffect(() => {
+    console.log("FoodItem render =", { id, name, imageSrc });
+  }, [id, name, imageSrc]);
+
+  useEffect(() => {
     let isActive = true;
 
     const fetchRating = async () => {

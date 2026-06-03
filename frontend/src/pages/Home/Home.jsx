@@ -23,6 +23,7 @@ const Home = () => {
   const [showBirthdayModal, setShowBirthdayModal] = useState(false)
   const [toastMessage, setToastMessage] = useState("")
   const [flashExcludeIds, setFlashExcludeIds] = useState([])
+  console.log("Home rendered")
 
   useEffect(() => {
     if (!toastMessage) return undefined

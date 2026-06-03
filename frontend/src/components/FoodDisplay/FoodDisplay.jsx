@@ -35,6 +35,7 @@ const buildPageItems = (totalPages, currentPage) => {
 const FoodDisplay = ({ category, excludeIds = [] }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  console.log("FoodDisplay rendered")
 
   const { food_list, url, addToCart } = useContext(StoreContext)
 
@@ -63,6 +64,10 @@ const FoodDisplay = ({ category, excludeIds = [] }) => {
       return name.includes(normalizedQuery) || description.includes(normalizedQuery) || itemCategory.includes(normalizedQuery)
     })
   }, [food_list, excludeSet, category, normalizedQuery])
+
+  useEffect(() => {
+    console.log("filteredFoods =", filteredFoods)
+  }, [filteredFoods])
 
   const totalPages = Math.max(1, Math.ceil(filteredFoods.length / ITEMS_PER_PAGE))
 
