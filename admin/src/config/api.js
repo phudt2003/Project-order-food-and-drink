@@ -1,11 +1,16 @@
+const DEFAULT_API_URL = "https://order-food-and-drink-project.onrender.com";
+
 const buildApiList = () => {
-  const localUrl = (import.meta.env.VITE_API_URL_LOCAL || "http://localhost:4000").trim();
-  const remoteUrl = (import.meta.env.VITE_API_URL_REMOTE || "https://tieu-luan-web.onrender.com").trim();
+  const allowLocalApi = isLocalLikeHost();
+  const primaryUrl = (import.meta.env.VITE_API_URL || DEFAULT_API_URL).trim();
+  const remoteUrl = (import.meta.env.VITE_API_URL_REMOTE || DEFAULT_API_URL).trim();
+  const localUrl = (import.meta.env.VITE_API_URL_LOCAL || "").trim();
+  const urls = allowLocalApi
+    ? [localUrl, primaryUrl, remoteUrl]
+    : [primaryUrl, remoteUrl, localUrl];
 
-  return [localUrl, remoteUrl].filter(Boolean);
+  return [...new Set(urls.filter((url) => url && (allowLocalApi || !isLocalApiUrl(url))))];
 };
-
-export const API_URLS = buildApiList();
 
 const isOkResponse = (response) => response && response.ok;
 
@@ -17,44 +22,38 @@ const isLocalLikeHost = () => {
   return false;
 };
 
-const hasNonEmptyList = async (response) => {
+const isLocalApiUrl = (value = "") => {
   try {
-    const json = await response.clone().json();
-    const list = Array.isArray(json?.data)
-      ? json.data
-      : Array.isArray(json?.data?.data)
-        ? json.data.data
-        : null;
-    return Array.isArray(list) && list.length > 0;
+    const host = new URL(value).hostname.toLowerCase();
+    return ["localhost", "127.0.0.1"].includes(host);
   } catch {
     return false;
   }
 };
 
+export const API_URLS = buildApiList();
+
 export const pickApiBase = async (options = {}) => {
   const {
     timeoutMs = 2500,
-    preferNonEmpty = !isLocalLikeHost(),
+    healthPath = "/",
   } = options;
-  let firstOk = "";
 
   for (const base of API_URLS) {
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), timeoutMs);
-      const response = await fetch(`${base}/api/product/list`, { signal: controller.signal });
+      const response = await fetch(`${base}${healthPath}`, { signal: controller.signal });
       clearTimeout(timer);
 
       if (isOkResponse(response)) {
-        if (!firstOk) firstOk = base;
-        if (!preferNonEmpty) return base;
-        if (await hasNonEmptyList(response)) return base;
+        return base;
       }
     } catch {
       // Try next base URL
     }
   }
 
-  return firstOk || API_URLS[0] || "";
+  return API_URLS[0] || "";
 };
 

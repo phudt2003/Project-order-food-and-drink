@@ -1,6 +1,7 @@
 ﻿import mongoose from "mongoose";
 import cartModel from "../models/cartModel.js";
 import userModel from "../models/userModel.js";
+import { calculateIngredients, checkToppingStock } from "../services/orderInventoryService.js";
 
 const slugify = (value) => {
   const text = String(value || "").trim().toLowerCase();
@@ -81,11 +82,97 @@ const sameCartItemConfig = (existingItem, payload) => {
   );
 };
 
+const toNumber = (value, fallback = 0) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
+const addToppingRequirement = (map, toppingId, quantity, name = "") => {
+  const id = String(toppingId || "").trim();
+  const qty = Math.max(0, toNumber(quantity, 0));
+  if (!mongoose.Types.ObjectId.isValid(id) || qty <= 0) return;
+
+  const previous = map.get(id) || { toppingId: id, quantity: 0, name: "" };
+  map.set(id, {
+    toppingId: id,
+    quantity: previous.quantity + qty,
+    name: previous.name || String(name || ""),
+  });
+};
+
 const getProductIdKey = (productId) => {
   if (!productId) return "";
   if (typeof productId === "string") return productId;
   if (productId?._id) return String(productId._id);
   return String(productId);
+};
+
+const buildToppingRequirementsForCartItems = async (items = []) => {
+  const requirements = new Map();
+
+  for (const item of Array.isArray(items) ? items : []) {
+    const productId = getProductIdKey(item?.productId);
+    if (!mongoose.Types.ObjectId.isValid(productId)) continue;
+
+    const calc = await calculateIngredients({
+      productId,
+      quantity: Math.max(1, Math.round(toNumber(item?.quantity, 1))),
+      sugarLevel: item?.sugarLevel,
+      toppings: normalizeToppings(item?.toppings),
+    });
+
+    (Array.isArray(calc?.toppingRequirements) ? calc.toppingRequirements : []).forEach((req) => {
+      addToppingRequirement(requirements, req?.toppingId, req?.quantity, req?.name);
+    });
+  }
+
+  return Array.from(requirements.values());
+};
+
+const formatToppingStockMessage = (shortages = []) => {
+  const names = (Array.isArray(shortages) ? shortages : [])
+    .map((item) => String(item?.name || "").trim())
+    .filter(Boolean);
+  const label = names.length ? names.join(", ") : "Topping";
+  return `${label} đã hết hoặc không đủ số lượng. Vui lòng chọn topping khác.`;
+};
+
+const checkCartToppingStockAfterAdd = async (cart, payload) => {
+  const simulatedItems = cart.items.map((item) => ({
+    productId: item.productId,
+    quantity: Math.max(1, Math.round(toNumber(item.quantity, 1))),
+    size: String(item.size || ""),
+    toppings: normalizeToppings(item.toppings),
+    sugarLevel: String(item.sugarLevel || ""),
+    iceLevel: String(item.iceLevel || ""),
+    price: Number(item.price) || 0,
+  }));
+
+  const existingIndex = simulatedItems.findIndex((item) => sameCartItemConfig(item, payload));
+
+  if (existingIndex >= 0) {
+    simulatedItems[existingIndex] = {
+      ...simulatedItems[existingIndex],
+      quantity: Math.max(1, Math.round(toNumber(simulatedItems[existingIndex].quantity, 1))) + payload.quantity,
+      toppings: normalizeToppings(simulatedItems[existingIndex].toppings),
+    };
+  } else {
+    simulatedItems.push(payload);
+  }
+
+  const toppingRequirements = await buildToppingRequirementsForCartItems(simulatedItems);
+  const toppingCheck = await checkToppingStock({ toppings: toppingRequirements });
+
+  if (!toppingCheck.ok) {
+    return {
+      ok: false,
+      status: 409,
+      message: formatToppingStockMessage(toppingCheck.shortages),
+      details: { shortages: toppingCheck.shortages },
+    };
+  }
+
+  return { ok: true };
 };
 
 const toCartDataMap = (items = []) => {
@@ -181,6 +268,15 @@ const addToCart = async (req, res) => {
     };
 
     const cart = await ensureCartDocument(userId);
+    const toppingStockCheck = await checkCartToppingStockAfterAdd(cart, payload);
+    if (!toppingStockCheck.ok) {
+      return res.status(toppingStockCheck.status || 409).json({
+        success: false,
+        message: toppingStockCheck.message || "Không đủ tồn kho topping.",
+        details: toppingStockCheck.details || null,
+      });
+    }
+
     const existingItem = cart.items.find((item) => sameCartItemConfig(item, payload));
 
     if (existingItem) {
@@ -203,7 +299,14 @@ const addToCart = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.json({ success: false, message: "Lỗi" });
+    if (error?.name === "InventoryError") {
+      return res.status(error.status || 409).json({
+        success: false,
+        message: error.message || "Không đủ tồn kho topping.",
+        details: error.details || null,
+      });
+    }
+    res.status(500).json({ success: false, message: "Lỗi" });
   }
 };
 

@@ -995,6 +995,15 @@ const placeOrder = async (req, res) => {
       shipping: parseVoucherEntry(req.body?.vouchers?.shipping),
     };
 
+    const inventoryCheck = await precheckInventoryForItems(req.body.items);
+    if (!inventoryCheck.ok) {
+      return res.status(inventoryCheck.status || 409).json({
+        success: false,
+        message: inventoryCheck.message || "Không đủ tồn kho.",
+        details: inventoryCheck.details || null,
+      });
+    }
+
     if (voucherPayload.order.voucherId && voucherPayload.shipping.voucherId) {
       return res.status(400).json({
         success: false,
