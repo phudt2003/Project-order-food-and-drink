@@ -126,12 +126,18 @@ const getIncomingContent = (payload, req) =>
     payload?.transferContent,
     payload?.transfer_content,
     payload?.content,
+    payload?.transactionContent,
+    payload?.transaction_content,
     payload?.description,
+    payload?.body,
     payload?.code,
     req.body?.transferContent,
     req.body?.transfer_content,
     req.body?.content,
+    req.body?.transactionContent,
+    req.body?.transaction_content,
     req.body?.description,
+    req.body?.body,
     req.body?.code
   );
 
@@ -140,9 +146,15 @@ const getIncomingAmount = (payload, req) =>
     payload?.transferAmount ??
       payload?.transfer_amount ??
       payload?.amount ??
+      payload?.amountIn ??
+      payload?.amount_in ??
+      payload?.in ??
       req.body?.transferAmount ??
       req.body?.transfer_amount ??
-      req.body?.amount
+      req.body?.amount ??
+      req.body?.amountIn ??
+      req.body?.amount_in ??
+      req.body?.in
   );
 
 const extractMongoIdsFromContent = (content) => {
@@ -325,7 +337,7 @@ const webhookSepay = async (req, res) => {
 
     const transferType = String(payload?.transferType || payload?.transfer_type || "").toLowerCase();
     if (transferType && transferType !== "in") {
-      return res.status(200).json({ success: true, message: "Ignored non-incoming transaction" });
+      return res.status(200).json({ success: true });
     }
 
     const incomingAmount = getIncomingAmount(payload, req);
@@ -338,9 +350,9 @@ const webhookSepay = async (req, res) => {
     const statusText = String(payload?.status || req.body?.status || "").toLowerCase();
     if (statusText && !isSuccessStatusText(statusText)) {
       if (isFailureStatusText(statusText)) {
-        return res.status(200).json({ success: true, message: "Ignored failed transaction status" });
+        return res.status(200).json({ success: true });
       }
-      return res.status(200).json({ success: true, message: "Ignored non-success transaction status" });
+      return res.status(200).json({ success: true });
     }
 
     const order = await findOrderByWebhook({
@@ -478,7 +490,7 @@ const webhookSepay = async (req, res) => {
     ]);
 
     if (!updatedOrder) {
-      return res.status(200).json({ success: true, message: "Duplicate webhook ignored" });
+      return res.status(200).json({ success: true });
     }
 
     return res.status(200).json({ success: true });
