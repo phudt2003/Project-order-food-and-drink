@@ -39,14 +39,14 @@ const formatCurrency = (value) => {
 const formatPercent = (value) => `${Number(value || 0).toFixed(1)}%`;
 
 const StatCard = ({ title, value, sub, icon }) => (
-  <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm">
+  <div className="rounded-3xl border border-stone-200/80 bg-white p-5 shadow-sm shadow-stone-200/70 transition duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-stone-200/80">
     <div className="flex items-center justify-between gap-3">
       <div>
-        <p className="text-sm text-stone-500">{title}</p>
-        <p className="mt-1 text-2xl font-semibold text-stone-800">{value}</p>
-        {sub ? <p className="mt-1 text-xs text-stone-400">{sub}</p> : null}
+        <p className="text-sm font-semibold text-stone-500">{title}</p>
+        <p className="mt-1 text-2xl font-bold tracking-tight text-stone-900">{value}</p>
+        {sub ? <p className="mt-2 max-w-[14rem] text-xs leading-5 text-stone-500">{sub}</p> : null}
       </div>
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-100 text-amber-700 shadow-inner">
         {icon}
       </div>
     </div>
@@ -186,14 +186,15 @@ const DashboardStats = ({ url }) => {
   };
 
   return (
-    <div className="min-h-screen w-full flex-1 bg-amber-50 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="min-h-screen w-full flex-1 bg-transparent px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-6xl flex-col gap-6">
-        <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-semibold text-stone-800">Báo cáo thống kê</h1>
-          <p className="text-sm text-stone-500">Thống kê hoạt động kinh doanh của cửa hàng</p>
+        <div className="rounded-3xl border border-stone-200/80 bg-white/90 p-5 text-center shadow-sm shadow-stone-200/70 backdrop-blur sm:p-6">
+          <p className="text-sm font-bold uppercase tracking-wide text-amber-700">Analytics</p>
+          <h1 className="mt-2 text-2xl font-bold tracking-tight text-stone-900 sm:text-3xl">Báo cáo thống kê</h1>
+          <p className="mt-2 text-sm leading-6 text-stone-500">Thống kê hoạt động kinh doanh của cửa hàng</p>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-2">
+        <div className="flex flex-wrap items-center justify-center gap-2 rounded-3xl border border-stone-200/80 bg-white/80 p-3 shadow-sm shadow-stone-200/70 backdrop-blur">
           {RANGE_OPTIONS.map((option) => {
             const active = range === option.value;
             return (
@@ -201,21 +202,21 @@ const DashboardStats = ({ url }) => {
                 key={option.value}
                 type="button"
                 onClick={() => setRange(option.value)}
-                className={`btn ${active ? "btn-view" : "btn-cancel"}`}
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition-all ${active ? "bg-amber-600 text-white shadow-lg shadow-amber-900/10" : "border border-stone-200 bg-white text-stone-600 hover:bg-stone-50"}`}
               >
                 {option.label}
               </button>
             );
           })}
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-2 rounded-full border border-amber-200 bg-white px-3 py-2 shadow-sm">
+            <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-stone-200 bg-white px-3 py-2 shadow-sm">
               <label className="text-xs font-semibold text-stone-500" htmlFor="export-from">
                 Từ
               </label>
               <input
                 id="export-from"
                 type="date"
-                className="rounded-md border border-amber-200 px-2 py-1 text-sm text-stone-700 focus:outline-none"
+                className="rounded-xl border border-stone-200 px-2 py-1 text-sm text-stone-700 focus:outline-none"
                 value={exportFrom}
                 onChange={(event) => {
                   setExportTouched(true);
@@ -228,7 +229,7 @@ const DashboardStats = ({ url }) => {
               <input
                 id="export-to"
                 type="date"
-                className="rounded-md border border-amber-200 px-2 py-1 text-sm text-stone-700 focus:outline-none"
+                className="rounded-xl border border-stone-200 px-2 py-1 text-sm text-stone-700 focus:outline-none"
                 value={exportTo}
                 onChange={(event) => {
                   setExportTouched(true);
@@ -239,7 +240,7 @@ const DashboardStats = ({ url }) => {
             <button
               type="button"
               onClick={handleExport}
-              className="btn btn-confirm"
+              className="rounded-full bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-900/10 transition-all hover:-translate-y-0.5 hover:bg-emerald-700"
             >
               Xuất Excel doanh thu
             </button>
@@ -340,9 +341,9 @@ const DashboardStats = ({ url }) => {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-          <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm">
+          <div className="rounded-3xl border border-stone-200/80 bg-white p-5 shadow-sm shadow-stone-200/70">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-base font-semibold text-stone-800">Doanh thu theo ngày</h2>
+              <h2 className="text-base font-bold text-stone-900">Doanh thu theo ngày</h2>
               <span className="text-xs text-stone-400">VND</span>
             </div>
             <div className="h-72">
@@ -358,9 +359,9 @@ const DashboardStats = ({ url }) => {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm">
+          <div className="rounded-3xl border border-stone-200/80 bg-white p-5 shadow-sm shadow-stone-200/70">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-base font-semibold text-stone-800">Trạng thái đơn hàng</h2>
+              <h2 className="text-base font-bold text-stone-900">Trạng thái đơn hàng</h2>
             </div>
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
@@ -379,9 +380,9 @@ const DashboardStats = ({ url }) => {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm">
+          <div className="rounded-3xl border border-stone-200/80 bg-white p-5 shadow-sm shadow-stone-200/70">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-base font-semibold text-stone-800">Doanh thu theo tháng</h2>
+              <h2 className="text-base font-bold text-stone-900">Doanh thu theo tháng</h2>
               <span className="text-xs text-stone-400">VND</span>
             </div>
             <div className="h-64">
@@ -397,9 +398,9 @@ const DashboardStats = ({ url }) => {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm">
+          <div className="rounded-3xl border border-stone-200/80 bg-white p-5 shadow-sm shadow-stone-200/70">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-base font-semibold text-stone-800">Doanh thu theo giờ</h2>
+              <h2 className="text-base font-bold text-stone-900">Doanh thu theo giờ</h2>
               <span className="text-xs text-stone-400">VND</span>
             </div>
             <div className="h-64">
@@ -417,9 +418,9 @@ const DashboardStats = ({ url }) => {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm">
+          <div className="rounded-3xl border border-stone-200/80 bg-white p-5 shadow-sm shadow-stone-200/70">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-base font-semibold text-stone-800">Phương thức thanh toán</h2>
+              <h2 className="text-base font-bold text-stone-900">Phương thức thanh toán</h2>
             </div>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -436,9 +437,9 @@ const DashboardStats = ({ url }) => {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm">
+          <div className="rounded-3xl border border-stone-200/80 bg-white p-5 shadow-sm shadow-stone-200/70">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-base font-semibold text-stone-800">Top 5 sản phẩm bán chạy</h2>
+              <h2 className="text-base font-bold text-stone-900">Top 5 sản phẩm bán chạy</h2>
             </div>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -455,14 +456,14 @@ const DashboardStats = ({ url }) => {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm">
+          <div className="rounded-3xl border border-stone-200/80 bg-white p-5 shadow-sm shadow-stone-200/70">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-base font-semibold text-stone-800">Top 5 sản phẩm bán chạy</h2>
+              <h2 className="text-base font-bold text-stone-900">Top 5 sản phẩm bán chạy</h2>
             </div>
             <div className="overflow-x-auto">
-              <table className="min-w-full border-collapse text-sm">
+              <table className="min-w-full border-separate border-spacing-0 text-sm">
                 <thead>
-                  <tr className="border-b border-amber-200 bg-amber-50 text-left text-stone-700">
+                  <tr className="bg-stone-50 text-left text-stone-600">
                     <th className="px-3 py-2 font-semibold">Tên món</th>
                     <th className="px-3 py-2 font-semibold">Số lượng bán</th>
                     <th className="px-3 py-2 font-semibold">Doanh thu</th>
@@ -486,7 +487,7 @@ const DashboardStats = ({ url }) => {
                   )}
                   {!loading &&
                     topProducts.map((product) => (
-                      <tr key={product.productId} className="border-b border-amber-100">
+                      <tr key={product.productId} className="border-b border-stone-100 transition hover:bg-stone-50/70">
                         <td className="px-3 py-2 font-medium text-stone-800">{product.name}</td>
                         <td className="px-3 py-2">{formatNumber(product.sold)}</td>
                         <td className="px-3 py-2">{formatCurrency(product.revenue)}</td>
@@ -498,14 +499,14 @@ const DashboardStats = ({ url }) => {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm">
+          <div className="rounded-3xl border border-stone-200/80 bg-white p-5 shadow-sm shadow-stone-200/70">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-base font-semibold text-stone-800">Top 5 sản phẩm bán chậm</h2>
+              <h2 className="text-base font-bold text-stone-900">Top 5 sản phẩm bán chậm</h2>
             </div>
             <div className="overflow-x-auto">
-              <table className="min-w-full border-collapse text-sm">
+              <table className="min-w-full border-separate border-spacing-0 text-sm">
                 <thead>
-                  <tr className="border-b border-amber-200 bg-amber-50 text-left text-stone-700">
+                  <tr className="bg-stone-50 text-left text-stone-600">
                     <th className="px-3 py-2 font-semibold">Tên món</th>
                     <th className="px-3 py-2 font-semibold">Số lượng bán</th>
                     <th className="px-3 py-2 font-semibold">Doanh thu</th>
@@ -529,7 +530,7 @@ const DashboardStats = ({ url }) => {
                   )}
                   {!loading &&
                     slowProducts.map((product) => (
-                      <tr key={product.productId} className="border-b border-amber-100">
+                      <tr key={product.productId} className="border-b border-stone-100 transition hover:bg-stone-50/70">
                         <td className="px-3 py-2 font-medium text-stone-800">{product.name}</td>
                         <td className="px-3 py-2">{formatNumber(product.sold)}</td>
                         <td className="px-3 py-2">{formatCurrency(product.revenue)}</td>

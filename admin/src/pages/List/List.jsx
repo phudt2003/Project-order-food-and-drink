@@ -94,18 +94,19 @@ function List({ url }) {
   };
 
   return (
-    <div className="w-full flex-1 bg-amber-50/40 p-4 sm:p-6">
+    <div className="w-full flex-1 bg-transparent p-4 sm:p-6">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mb-5 flex flex-col gap-4 rounded-3xl border border-stone-200/80 bg-white/90 p-5 shadow-sm shadow-stone-200/70 backdrop-blur sm:flex-row sm:items-center sm:justify-between">
           <div className="text-center sm:text-left">
-            <h1 className="text-2xl font-bold text-stone-800">{t("list.title")}</h1>
-            <p className="text-sm text-stone-500">
+            <p className="text-sm font-bold uppercase tracking-wide text-amber-700">Products</p>
+            <h1 className="mt-1 text-2xl font-bold tracking-tight text-stone-900">{t("list.title")}</h1>
+            <p className="mt-1 text-sm leading-6 text-stone-500">
               {t("list.subtitle")}
             </p>
           </div>
           <button
             type="button"
-            className="btn btn-add self-center sm:self-auto"
+            className="self-center rounded-full bg-amber-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-amber-900/10 transition-all hover:-translate-y-0.5 hover:bg-amber-700 focus:outline-none focus:ring-4 focus:ring-amber-200 sm:self-auto"
             onClick={() => navigate("/add")}
           >
             + {t("list.add_product")}
@@ -113,13 +114,22 @@ function List({ url }) {
         </div>
 
         {loading ? (
-          <div className="rounded-2xl border border-amber-200 bg-white p-6 text-sm text-stone-600">
-            {t("list.loading_products")}
+          <div className="rounded-3xl border border-stone-200/80 bg-white p-6 shadow-sm shadow-stone-200/70">
+            <p className="text-sm font-semibold text-stone-600">{t("list.loading_products")}</p>
+            <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {[1, 2, 3].map((item) => (
+                <div key={item} className="rounded-2xl border border-stone-200 p-4">
+                  <div className="h-36 animate-pulse rounded-2xl bg-stone-100" />
+                  <div className="mt-4 h-4 w-2/3 animate-pulse rounded-full bg-stone-100" />
+                  <div className="mt-3 h-4 w-1/2 animate-pulse rounded-full bg-stone-100" />
+                </div>
+              ))}
+            </div>
           </div>
         ) : sortedProducts.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-amber-300 bg-white p-8 text-center">
-            <p className="text-base font-semibold text-stone-700">{t("list.no_products")}</p>
-            <p className="mt-1 text-sm text-stone-500">
+          <div className="rounded-3xl border border-dashed border-stone-300 bg-white p-10 text-center shadow-sm shadow-stone-200/70">
+            <p className="text-lg font-bold text-stone-800">{t("list.no_products")}</p>
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-stone-500">
               {t("list.no_products_hint")}
             </p>
           </div>

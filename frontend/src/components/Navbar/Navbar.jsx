@@ -103,7 +103,7 @@ const Navbar = () => {
 
   return (
     <>
-      <header className='sticky top-0 z-50 w-full bg-[var(--bg-body)] px-4 py-3 shadow-none transition-colors duration-300 md:px-10 md:py-4'>
+      <header className='sticky top-0 z-50 w-full border-b border-[var(--border-color)]/70 bg-[var(--bg-body)]/90 px-4 py-3 shadow-sm shadow-black/5 backdrop-blur-xl transition-colors duration-300 md:px-10 md:py-4'>
         <div className='mx-auto w-full max-w-7xl'>
           <div className='flex items-center justify-between md:grid md:grid-cols-[auto_1fr_auto] md:items-start'>
             {/* Left */}
@@ -119,7 +119,7 @@ const Navbar = () => {
 
             {/* Center: menu + icons */}
             <div className='hidden flex-col items-center md:flex'>
-              <nav className='flex flex-nowrap justify-center gap-12 text-sm font-medium text-[#3A3A3A] dark:text-[#F5F5F5]'>
+              <nav className='flex flex-nowrap justify-center gap-3 rounded-full border border-[var(--border-color)] bg-[var(--card-bg)]/80 p-1 text-sm font-medium text-[#3A3A3A] shadow-sm dark:text-[#F5F5F5]'>
                 {navLinks.map((item) => (
                   <NavLink
                     key={item.to}
@@ -127,8 +127,8 @@ const Navbar = () => {
                     end={item.to === '/'}
                     className={({ isActive }) =>
                       [
-                        'whitespace-nowrap transition-colors hover:text-[#C67C4E] active:text-[#C67C4E] dark:active:text-black',
-                        isActive ? 'text-[#C67C4E] dark:text-black' : 'text-[#3A3A3A] dark:text-[#F5F5F5]',
+                        'whitespace-nowrap rounded-full px-4 py-2 transition-all duration-200 hover:bg-[var(--bg-body)] hover:text-[#C67C4E] active:text-[#C67C4E] dark:active:text-white',
+                        isActive ? 'bg-[var(--accent-soft)] text-[#C67C4E] shadow-sm dark:text-white' : 'text-[#3A3A3A] dark:text-[#F5F5F5]',
                       ].join(' ')
                     }
                   >
@@ -137,7 +137,7 @@ const Navbar = () => {
                 ))}
               </nav>
 
-              <div className='mt-2 flex justify-center gap-16 text-xl text-gray-500 dark:text-[#E5E5E5]'>
+              <div className='mt-3 flex justify-center gap-4 text-xl text-gray-500 dark:text-[#E5E5E5]'>
                 {iconLinks.map((item) => {
                   const Icon = item.icon
                   return (
@@ -146,8 +146,8 @@ const Navbar = () => {
                       to={item.to}
                       className={({ isActive }) =>
                         [
-                          'relative inline-flex items-center justify-center rounded-full transition-colors hover:text-[#C67C4E]',
-                          isActive ? 'text-[#C67C4E]' : 'text-gray-500 dark:text-[#E5E5E5]',
+                          'relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-transparent transition-all duration-200 hover:-translate-y-0.5 hover:border-[var(--border-color)] hover:bg-[var(--card-bg)] hover:text-[#C67C4E] hover:shadow-sm',
+                          isActive ? 'border-[var(--border-color)] bg-[var(--card-bg)] text-[#C67C4E] shadow-sm' : 'text-gray-500 dark:text-[#E5E5E5]',
                         ].join(' ')
                       }
                       aria-label={item.label}
@@ -182,7 +182,7 @@ const Navbar = () => {
               {isLoaded && !isSignedIn ? (
                 <button
                   type='button'
-                  className='rounded-full bg-[#C67C4E] px-5 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-[#B66B3E]'
+                  className='rounded-full bg-[#C67C4E] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-orange-900/10 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#B66B3E] focus:outline-none focus:ring-4 focus:ring-orange-200'
                   onClick={() => setShowLogin(true)}
                 >
                   Đăng nhập
@@ -201,7 +201,7 @@ const Navbar = () => {
               {isLoaded && !isSignedIn ? (
                 <button
                   type='button'
-                  className='flex h-7 items-center justify-center rounded-full bg-[#C67C4E] px-3 text-sm font-medium leading-none text-white transition-colors duration-200 hover:bg-[#B66B3E]'
+                  className='flex h-8 items-center justify-center rounded-full bg-[#C67C4E] px-3 text-sm font-semibold leading-none text-white shadow-sm transition-colors duration-200 hover:bg-[#B66B3E]'
                   onClick={() => setShowLogin(true)}
                 >
                   Đăng nhập
@@ -217,7 +217,7 @@ const Navbar = () => {
       </header>
 
       {/* Mobile bottom navigation */}
-      <nav className='fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white py-2 md:hidden dark:border-white/10 dark:bg-[var(--bg-body)]'>
+      <nav className='fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white/95 py-2 shadow-[0_-12px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl md:hidden dark:border-white/10 dark:bg-[var(--bg-body)]/95'>
         <div className='flex items-stretch justify-around'>
           {bottomNavLinks.map((item) => {
             const Icon = item.icon

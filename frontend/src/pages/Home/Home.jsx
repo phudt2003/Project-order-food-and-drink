@@ -171,29 +171,29 @@ const Home = () => {
         {/* =========================
             Ưu đãi Voucher Hot (Home)
             ========================= */}
-        <section className='mx-auto w-full max-w-6xl px-4 pt-4'>
-          <div className='rounded-2xl border border-[var(--border-color)] bg-[var(--card-bg)] p-4 shadow-sm'>
-            <div className='flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between'>
+        <section className='mx-auto w-full max-w-6xl px-4 pt-6'>
+          <div className='rounded-3xl border border-[var(--border-color)] bg-[var(--card-bg)] p-5 shadow-lg shadow-black/5 sm:p-6'>
+            <div className='flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between'>
               <div>
-                <p className='text-sm font-semibold tracking-wide text-[var(--accent)]'>Ưu đãi Voucher Hot</p>
-                <h3 className='mt-1 text-lg font-semibold'>Voucher đang có hiệu lực</h3>
-                <p className='mt-1 text-sm opacity-80'>
+                <p className='text-sm font-bold uppercase tracking-wide text-[var(--accent)]'>Ưu đãi Voucher Hot</p>
+                <h3 className='mt-1 text-2xl font-bold tracking-tight text-[var(--text-primary)]'>Voucher đang có hiệu lực</h3>
+                <p className='mt-2 max-w-2xl text-sm leading-6 text-[var(--text-secondary)]'>
                   {token ? `Bạn đang có ${voucherActiveCount} voucher có thể dùng ngay.` : 'Đăng nhập để xem voucher dành cho bạn.'}
                 </p>
               </div>
 
-              <div className='flex items-center gap-2'>
+              <div className='flex flex-wrap items-center gap-2'>
                 <button
                   type='button'
                   onClick={() => navigate('/myvouchers')}
-                  className='rounded-xl border border-[var(--border-color)] px-4 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/5'
+                  className='rounded-full border border-[var(--border-color)] bg-[var(--card-bg)] px-4 py-2.5 text-sm font-semibold shadow-sm transition-all hover:-translate-y-0.5 hover:bg-black/5 focus:outline-none focus:ring-4 focus:ring-orange-200 dark:hover:bg-white/5'
                 >
                   Xem tất cả
                 </button>
                 <button
                   type='button'
                   onClick={() => navigate('/cart')}
-                  className='rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white hover:opacity-95'
+                  className='rounded-full bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-orange-900/10 transition-all hover:-translate-y-0.5 hover:opacity-95 focus:outline-none focus:ring-4 focus:ring-orange-200'
                 >
                   Đi giỏ hàng
                 </button>
@@ -215,7 +215,7 @@ const Home = () => {
             {/* Danh sách voucher active của user */}
             {token ? (
               activeVouchers.length > 0 ? (
-                <div className='mt-4 grid grid-cols-1 gap-4 md:grid-cols-2'>
+                <div className='mt-5 grid grid-cols-1 gap-4 md:grid-cols-2'>
                   {activeVouchers.slice(0, 6).map((item) => (
                     <VoucherCard
                       key={String(item?.voucher?._id || `${item?.voucher?.voucherCode || 'voucher'}-${item?.voucher?.createdAt || ''}`)}
@@ -225,12 +225,12 @@ const Home = () => {
                   ))}
                 </div>
               ) : (
-                <div className='mt-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-body)] p-4 text-sm opacity-80'>
+                <div className='mt-5 rounded-2xl border border-dashed border-[var(--border-color)] bg-[var(--bg-body)] p-5 text-sm leading-6 text-[var(--text-secondary)]'>
                   Hiện chưa có voucher nào đang khả dụng. Hãy ghé lại sau hoặc xem mục Voucher để nhận ưu đãi mới.
                 </div>
               )
             ) : (
-              <div className='mt-4 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-body)] p-4 text-sm opacity-80'>
+              <div className='mt-5 rounded-2xl border border-dashed border-[var(--border-color)] bg-[var(--bg-body)] p-5 text-sm leading-6 text-[var(--text-secondary)]'>
                 Bạn cần đăng nhập để xem voucher cá nhân (welcome/birthday/comeback...).
               </div>
             )}

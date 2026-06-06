@@ -5,10 +5,10 @@
   /* Coffee Bingo admin theme */
   --primary: #8B5E3C;
   --primary-hover: #6f472c;
-  --bg-body: #f6f3ef;
-  --bg-app: #f6f3ef;
+  --bg-body: #f8f7f5;
+  --bg-app: #f8f7f5;
   --bg-surface: #ffffff;
-  --bg-surface-alt: #faf8f6;
+  --bg-surface-alt: #f3f0ec;
 
   --text-primary: #2c2c2c;
   --text-secondary: #5b5b5b;
@@ -22,7 +22,7 @@
   --accent-strong: var(--primary-hover);
   --accent-soft: rgba(139, 94, 60, 0.12);
   --nav-bg: rgba(246, 243, 239, 0.96);
-  --border-color: #e6e1db;
+  --border-color: #e8e1d9;
   --card-bg: #ffffff;
 
   /* Tailwind palette tokens (theme-aligned) */
@@ -101,6 +101,9 @@ hr{
   flex: 1;
   min-width: 0;
   width: 100%;
+  background:
+    radial-gradient(circle at top left, rgba(139, 94, 60, 0.08), transparent 30rem),
+    var(--bg-body);
 }
 
 /* dùng cho các form như Add, List, Orders */
