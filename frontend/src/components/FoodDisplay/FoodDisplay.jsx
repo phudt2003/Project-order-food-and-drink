@@ -108,7 +108,7 @@ const FoodDisplay = ({ category, excludeIds = [] }) => {
         <div className='food-display-empty'>Không tìm thấy sản phẩm phù hợp.</div>
       ) : (
         <>
-          <div className='food-display-list'>
+          <div className='mt-[22px] grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4'>
             {currentFoods.map((item) => (
               <FoodItem
                 key={item._id}

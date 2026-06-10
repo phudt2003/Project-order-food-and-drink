@@ -40,12 +40,12 @@ function FoodItem({ id, name, price, description, image, url, onAdd }) {
   }, [id, url]);
 
   return (
-    <div className="food-item">
+    <div className="group flex h-full min-w-0 flex-col overflow-hidden rounded-lg bg-[var(--card-bg)] shadow-[0_0_10px_#00000015] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(46,26,12,0.14)]">
       {/* IMAGE */}
-      <div className="food-item-img-container">
-        <Link to={`/product/${id}`} className="food-item-image-link">
+      <div className="relative">
+        <Link to={`/product/${id}`} className="block aspect-[4/3] w-full overflow-hidden bg-[#ece6dc]">
           <img
-            className="food-item-image"
+            className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.03]"
             src={imageSrc}
             alt={name}
           />
@@ -54,10 +54,10 @@ function FoodItem({ id, name, price, description, image, url, onAdd }) {
       </div>
 
       {/* INFO */}
-      <div className="food-item-info">
-        <div className="food-item-name-rating">
-          <Link to={`/product/${id}`} className="food-item-name-link">
-            <p className="namewe">{name}</p>
+      <div className="flex flex-1 min-w-0 flex-col p-3 sm:p-4">
+        <div className="mb-2 flex min-w-0 flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
+          <Link to={`/product/${id}`} className="block min-w-0 flex-1 text-[var(--text-primary)] no-underline transition-colors hover:text-[var(--accent)]">
+            <p className="line-clamp-2 min-h-[2.5em] break-words text-sm font-semibold leading-tight text-[var(--text-primary)] transition-colors sm:text-base">{name}</p>
           </Link>
           <span className="ratingstars" aria-label={`Đánh giá ${rating} sao`}>
             {Array.from({ length: 5 }).map((_, index) => (
@@ -66,8 +66,8 @@ function FoodItem({ id, name, price, description, image, url, onAdd }) {
           </span>
         </div>
 
-        <p className="food-item-desc">{description}</p>
-        <p className="food-item-price">{formatVND(price)}</p>
+        <p className="line-clamp-2 min-h-[3em] text-xs leading-6 text-[var(--text-secondary)] transition-colors">{description}</p>
+        <p className="mt-auto pt-2 text-base font-bold text-[tomato] transition-colors sm:text-lg">{formatVND(price)}</p>
 
       </div>
     </div>
