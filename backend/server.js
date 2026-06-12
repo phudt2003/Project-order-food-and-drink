@@ -8,6 +8,7 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 
 import express from "express";
 import cors from "cors";
+import compression from "compression";
 import { connectDB } from "./config/db.js";
 
 import foodRouter from "./routes/foodRoute.js";
@@ -43,8 +44,18 @@ app.use(cors({
   credentials: true
 }));
 
+app.use(compression());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+
+app.use((req, res, next) => {
+  if (req.path.startsWith("/images")) {
+    res.setHeader("Cache-Control", "public, max-age=604800, stale-while-revalidate=86400");
+  } else if (req.path.startsWith("/api")) {
+    res.setHeader("Cache-Control", "no-store");
+  }
+  next();
+});
 
 const boot = async () => {
   // connect database

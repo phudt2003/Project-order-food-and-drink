@@ -59,7 +59,7 @@ function FoodItem({ id, name, price, description, image, url, onAdd }) {
           <Link to={`/product/${id}`} className="block min-w-0 flex-1 text-[var(--text-primary)] no-underline transition-colors hover:text-[var(--accent)]">
             <p className="line-clamp-2 min-h-[2.5em] break-words text-sm font-semibold leading-tight text-[var(--text-primary)] transition-colors sm:text-base">{name}</p>
           </Link>
-          <span className="ratingstars" aria-label={`Đánh giá ${rating} sao`}>
+          <span className="ratingstars" role="img" aria-label={`Đánh giá ${rating} sao`}>
             {Array.from({ length: 5 }).map((_, index) => (
               <FaStar key={`${id}-star-${index}`} className={index < rating ? "is-filled" : "is-empty"} />
             ))}
@@ -67,7 +67,7 @@ function FoodItem({ id, name, price, description, image, url, onAdd }) {
         </div>
 
         <p className="line-clamp-2 min-h-[3em] text-xs leading-6 text-[var(--text-secondary)] transition-colors">{description}</p>
-        <p className="mt-auto pt-2 text-base font-bold text-[tomato] transition-colors sm:text-lg">{formatVND(price)}</p>
+        <p className="mt-auto pt-2 text-base font-bold text-[var(--accent)] transition-colors sm:text-lg">{formatVND(price)}</p>
 
       </div>
     </div>

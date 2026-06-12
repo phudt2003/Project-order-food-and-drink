@@ -182,7 +182,7 @@ function ProductDetail() {
         const response = await axios.get(`${url}/api/toppings`);
         const list = Array.isArray(response?.data?.data) ? response.data.data : [];
         if (isMounted) setToppingInventory(list);
-      } catch (error) {
+      } catch {
         if (isMounted) setToppingInventory([]);
       }
     };
@@ -321,11 +321,10 @@ function ProductDetail() {
       const key = normalizeName(item?.name);
       const stock = toppingStockByName.get(key);
       if (!Number.isFinite(stock)) return;
-      const perItemMax = Math.max(0, Math.floor(stock / Math.max(1, quantity)));
-      result[item.id] = perItemMax;
+      result[item.id] = Math.max(0, Math.floor(stock));
     });
     return result;
-  }, [toppings, toppingStockByName, quantity]);
+  }, [toppings, toppingStockByName]);
 
   const getToppingStock = (toppingId) => {
     const topping = toppingsById.get(toppingId);
@@ -339,7 +338,7 @@ function ProductDetail() {
       const current = Number(prev?.[toppingId]) || 0;
       const next = current + 1;
       const stock = getToppingStock(toppingId);
-      if (Number.isFinite(stock) && next * quantity > stock) {
+      if (Number.isFinite(stock) && next > stock) {
         const name = toppingsById.get(toppingId)?.name || "Topping";
         setToppingNotice(`${name} chỉ còn ${stock}. Vui lòng giảm số lượng.`);
         return prev;
@@ -390,7 +389,8 @@ function ProductDetail() {
     basePrice > 0 ? basePrice + sizePrice : selectedSize ? sizePrice : productPrice;
 
   const unitPrice = baseAndSizePrice + toppingsTotal;
-  const totalPrice = unitPrice * quantity;
+  const totalPrice = baseAndSizePrice * quantity + toppingsTotal;
+  const cartUnitPrice = quantity > 0 ? totalPrice / quantity : unitPrice;
 
   const handleOptionChange = (groupKey, itemId, type) => {
     setSelectedOptions((prev) => {
@@ -426,7 +426,7 @@ function ProductDetail() {
         name,
       })),
       quantity,
-      price: unitPrice,
+      price: cartUnitPrice,
     });
 
     if (added !== false) navigate("/cart");
@@ -449,7 +449,7 @@ function ProductDetail() {
         name,
       })),
       quantity,
-      price: unitPrice,
+      price: cartUnitPrice,
     };
 
     localStorage.removeItem("selectedCartLineKeys");
@@ -556,19 +556,8 @@ function ProductDetail() {
               setQuantity((prev) => Math.max(1, prev - 1));
             }}
             onIncrease={() => {
-              const nextQty = quantity + 1;
-              const shortage = toppingSelections.find((topping) => {
-                const stock = toppingStockByName.get(normalizeName(topping.name));
-                if (!Number.isFinite(stock)) return false;
-                return topping.quantity * nextQty > stock;
-              });
-              if (shortage) {
-                const stock = toppingStockByName.get(normalizeName(shortage.name)) || 0;
-                setToppingNotice(`${shortage.name} chỉ còn ${stock}. Vui lòng giảm topping.`);
-                return;
-              }
               setToppingNotice("");
-              setQuantity(nextQty);
+              setQuantity((prev) => prev + 1);
             }}
           />
 

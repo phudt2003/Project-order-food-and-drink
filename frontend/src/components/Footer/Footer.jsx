@@ -8,7 +8,7 @@ const Footer = () => {
     <div className='footer' id='footer'>
       <div className="footer-content">
         <div className="footer-content-left">
-          <img src="/logo.png" alt="logo" />
+          <img src="/logo.png" alt="Coffee Bingo" width="150" height="26" />
           <p>Coffee Bingo mang đến trải nghiệm cà phê và ẩm thực hiện đại, ấm cúng với hương vị được chăm chút mỗi ngày.</p>
           <div className="footer-social-icons">
             <a
@@ -20,10 +20,10 @@ const Footer = () => {
             >
               <FaFacebookF />
             </a>
-            <span className="footer-social-link" aria-label="Twitter">
+            <span className="footer-social-link" role="img" aria-label="Twitter">
               <FaXTwitter />
             </span>
-            <span className="footer-social-link" aria-label="LinkedIn">
+            <span className="footer-social-link" role="img" aria-label="LinkedIn">
               <FaLinkedinIn />
             </span>
           </div>

@@ -69,7 +69,7 @@ const Navbar = () => {
       { to: '/', label: 'Trang chủ' },
       { to: '/menu', label: 'Thực đơn' },
       { to: '/mobile-app', label: 'Ứng dụng' },
-      { to: '/contact#footer', label: 'Liên hệ' },
+      { to: '/contact', label: 'Liên hệ' },
     ],
     []
   )
@@ -112,6 +112,8 @@ const Navbar = () => {
                 <img
                   src='/logo.png'
                   alt='Coffee Bingo'
+                  width='186'
+                  height='32'
                   className='mr-2 h-7 w-auto md:mr-0 md:h-8 dark:brightness-0 dark:invert'
                 />
               </Link>
@@ -127,8 +129,8 @@ const Navbar = () => {
                     end={item.to === '/'}
                     className={({ isActive }) =>
                       [
-                        'whitespace-nowrap rounded-full px-4 py-2 transition-all duration-200 hover:bg-[var(--bg-body)] hover:text-[#C67C4E] active:text-[#C67C4E] dark:active:text-white',
-                        isActive ? 'bg-[var(--accent-soft)] text-[#C67C4E] shadow-sm dark:text-white' : 'text-[#3A3A3A] dark:text-[#F5F5F5]',
+                        'whitespace-nowrap rounded-full px-4 py-2 transition-all duration-200 hover:bg-[var(--bg-body)] hover:text-[var(--accent)] active:text-[var(--accent)] dark:active:text-white',
+                        isActive ? 'bg-[var(--accent-soft)] text-[var(--accent)] shadow-sm dark:text-white' : 'text-[#3A3A3A] dark:text-[#F5F5F5]',
                       ].join(' ')
                     }
                   >
@@ -182,7 +184,7 @@ const Navbar = () => {
               {isLoaded && !isSignedIn ? (
                 <button
                   type='button'
-                  className='rounded-full bg-[#C67C4E] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-orange-900/10 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#B66B3E] focus:outline-none focus:ring-4 focus:ring-orange-200'
+                  className='rounded-full bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-orange-900/10 transition-all duration-200 hover:-translate-y-0.5 hover:brightness-95 focus:outline-none focus:ring-4 focus:ring-orange-200'
                   onClick={() => setShowLogin(true)}
                 >
                   Đăng nhập
@@ -201,7 +203,7 @@ const Navbar = () => {
               {isLoaded && !isSignedIn ? (
                 <button
                   type='button'
-                  className='flex h-8 items-center justify-center rounded-full bg-[#C67C4E] px-3 text-sm font-semibold leading-none text-white shadow-sm transition-colors duration-200 hover:bg-[#B66B3E]'
+                  className='flex h-8 items-center justify-center rounded-full bg-[var(--accent)] px-3 text-sm font-semibold leading-none text-white shadow-sm transition-colors duration-200 hover:brightness-95'
                   onClick={() => setShowLogin(true)}
                 >
                   Đăng nhập

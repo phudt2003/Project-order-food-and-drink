@@ -11,8 +11,10 @@ const Header = () => {
       }}
     >
       <div className="hero-content">
-        <h1 className="hero-title-desktop">Khám Phá Cà Phê & Món Ăn Yêu Thích</h1>
-        <h1 className="hero-title-mobile">Cà Phê Ngon, Món Ăn Chuẩn Vị</h1>
+        <h1>
+          <span className="hero-title-desktop">Khám Phá Cà Phê & Món Ăn Yêu Thích</span>
+          <span className="hero-title-mobile">Cà Phê Ngon, Món Ăn Chuẩn Vị</span>
+        </h1>
 
         <p className="hero-desc-desktop">
           Thưởng thức cà phê pha chế tươi, món ăn ngon và các món ăn nhẹ hấp dẫn từ

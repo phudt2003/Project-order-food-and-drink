@@ -1,6 +1,6 @@
 ﻿.footer {
-    color: #d9d9d9;
-    background-color: #9e784b;
+    color: #ffffff;
+    background-color: #6f4527;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -39,6 +39,7 @@
 /* Màu sắc tiêu đề các cột */
 .footer-content-right h2, .footer-content-center h2 {
     color: white;
+    font-weight: 700;
 }
 
 /* Định dạng icon mạng xã hội */
@@ -78,6 +79,7 @@
 /* Thêm đoạn này để thu nhỏ logo chính */
 .footer-content-left > img {
     width: 150px; /* Bạn có thể điều chỉnh con số này (ví dụ 120px hoặc 100px) để vừa ý */
+    height: auto;
     margin-bottom: 10px;
 }
 

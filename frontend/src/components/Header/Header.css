@@ -54,6 +54,10 @@
     visibility: visible;
 }
 
+.hero-content h1 span {
+    display: block;
+}
+
 .hero-title-mobile,
 .hero-desc-mobile {
     display: none;

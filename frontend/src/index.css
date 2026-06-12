@@ -11,14 +11,14 @@
 
     --text-primary: #2c2c2c;
     --text-secondary: #6b6b6b;
-    --text-muted: #9a9a9a;
+    --text-muted: #686868;
 
     --text-main: var(--text-primary);
     --text-dim: var(--text-secondary);
 
-    --accent: #c67c4e;
+    --accent: #8f4d27;
     --header-text: #3b2f2f;
-    --header-hover: #c67c4e;
+    --header-hover: #8f4d27;
     --nav-bg: rgba(247, 243, 238, 0.96);
     --border-color: #e7d9cb;
     --card-bg: #ffffff;

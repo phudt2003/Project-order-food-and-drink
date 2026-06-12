@@ -37,10 +37,12 @@ const Home = () => {
 
   useEffect(() => {
     const sectionMap = {
+      "/products": "food-display",
       "/menu": "food-display",
       "/explore-menu": "explore-menu",
       "/food-display": "food-display",
       "/mobile-app": "app-download",
+      "/contact": "footer",
     }
 
     const hashTarget = location.hash ? String(location.hash).replace("#", "") : ""
@@ -176,7 +178,7 @@ const Home = () => {
             <div className='flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between'>
               <div>
                 <p className='text-sm font-bold uppercase tracking-wide text-[var(--accent)]'>Ưu đãi Voucher Hot</p>
-                <h3 className='mt-1 text-2xl font-bold tracking-tight text-[var(--text-primary)]'>Voucher đang có hiệu lực</h3>
+                <h2 className='mt-1 text-2xl font-bold tracking-tight text-[var(--text-primary)]'>Voucher đang có hiệu lực</h2>
                 <p className='mt-2 max-w-2xl text-sm leading-6 text-[var(--text-secondary)]'>
                   {token ? `Bạn đang có ${voucherActiveCount} voucher có thể dùng ngay.` : 'Đăng nhập để xem voucher dành cho bạn.'}
                 </p>

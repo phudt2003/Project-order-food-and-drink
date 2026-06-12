@@ -9,11 +9,16 @@ function ToppingQuantityGroup({
   onDecrease,
   maxById = {},
 }) {
+  const totalQuantity = Object.values(value || {}).reduce((sum, rawQuantity) => {
+    const quantity = Number(rawQuantity) || 0;
+    return sum + Math.max(0, quantity);
+  }, 0);
+
   return (
     <section className="mt-4 rounded-2xl border border-slate-100 bg-white p-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-slate-800">{title}</h3>
-        <span className="text-xs text-slate-500">Có thể chọn nhiều lần</span>
+        <span className="text-xs text-slate-500">Đã chọn {totalQuantity}</span>
       </div>
 
       <div className="mt-3 divide-y divide-slate-100">
